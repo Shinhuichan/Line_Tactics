@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9601219efd27249a42fd2a7167d4d4, type: 3}
+  m_Name: Outpost(Humanic)
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: "\uC6C0\uB9C9"
+  type: 0
+  race: 0
+  description: 
+  icon: {fileID: 1217887823, guid: 4872990144f95a14d94ca751d86590b5, type: 3}
+  worldSprite: {fileID: 0}
+  isRangedUnit: 0
+  isFlyingUnit: 0
+  isMechanical: 1
+  constructionTime: 15
+  ironCost: 400
+  oilCost: 0
+  hp: 6500
+  defense: 50
+  moveSpeed: 0
+  attackRange: 0
+  detectRange: 6
+  attackDamage: 0
+  attackCooldown: 0
+  explosionRadius: 0
+  defendDistance: 0
+  racialShieldPrefab: {fileID: 0}

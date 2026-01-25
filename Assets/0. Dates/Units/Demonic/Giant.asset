@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9601219efd27249a42fd2a7167d4d4, type: 3}
+  m_Name: Giant
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: "\uAC70\uC778\uBCD1"
+  type: 111
+  race: 1
+  description: "\uC555\uB3C4\uC801\uC778 \uCCB4\uB825\uC73C\uB85C \uC804\uC120\uC744
+    \uBC00\uC5B4\uBD99\uC774\uB294 \uAC70\uB300 \uAE30\uACC4 \uBCD1\uAE30\uC785\uB2C8\uB2E4.
+    \uAC15\uB825\uD55C \uB0B4\uB824\uCC0D\uAE30\uB85C \uC801\uB4E4\uC744 \uAE30\uC808\uC2DC\uD0A4\uBA70,
+    [\uAC70\uB300\uD654] \uC5F0\uAD6C\uB97C \uD1B5\uD574 \uB369\uCE58\uC640 \uACF5\uACA9
+    \uBC94\uC704\uB97C \uADF9\uD55C\uC73C\uB85C \uD0A4\uC6CC \uC804\uC7A5\uC744 \uC7A5\uC545\uD569\uB2C8\uB2E4."
+  icon: {fileID: 2030217447, guid: e8f3f1a40b9f82343b3b3733dbef507a, type: 3}
+  worldSprite: {fileID: 0}
+  isRangedUnit: 0
+  isFlyingUnit: 0
+  isMechanical: 1
+  constructionTime: 10
+  ironCost: 450
+  oilCost: 50
+  hp: 1000
+  defense: 5
+  moveSpeed: 0.75
+  attackRange: 1.75
+  detectRange: 6
+  attackDamage: 50
+  attackCooldown: 2.5
+  explosionRadius: 0
+  defendDistance: 3.25
+  racialShieldPrefab: {fileID: 0}

@@ -1,0 +1,111 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78474d27b4cd9464e802207e80728818, type: 3}
+  m_Name: Gorgon's Gaze
+  m_EditorClassIdentifier: Assembly-CSharp::BotStrategyData
+  strategyRace: 1
+  strategyDescription: "\"\uB0B4 \uB208\uC744 \uBC14\uB77C\uBD10.\" \uC801\uC744
+    \uAC15\uC81C\uB85C \uB04C\uC5B4\uC640 **\uC989\uC0AC(\uC11D\uD654)**\uC2DC\uD0A4\uB294
+    \uACF5\uD3EC\uC2A4\uB7EC\uC6B4 \uB09A\uC2DC \uC804\uB7B5\uC785\uB2C8\uB2E4.\r\n\r\n\uD575\uC2EC
+    \uCEE8\uC149: \uB0A9\uCE58 + \uC989\uC0AC (Snipe)\r\n\r\n\uC8FC\uB825 \uC870\uD569:\r\n\r\nHarpooner
+    (\uC791\uC0B4\uBCD1): \uBA40\uB9AC \uC788\uB294 \uC801\uC744 \uC791\uC0B4\uB85C
+    \uB04C\uC5B4\uC635\uB2C8\uB2E4(ENHANCED_HARPOON \uBC84\uD504\uB294 \uB364).\r\n\r\nMedusa
+    (\uBA54\uB450\uC0AC): \uB04C\uB824\uC628 \uC801\uC744 PETRIFICATION (\uC11D\uD654)\uC73C\uB85C
+    \uC989\uC0AC\uC2DC\uD0B5\uB2C8\uB2E4.\r\n\r\nTrumpeter (\uB098\uD314\uBCD1):
+    \uBA54\uB450\uC0AC\uC758 \uACF5\uACA9 \uC18D\uB3C4\uB97C \uB192\uC5EC \uB354
+    \uBE68\uB9AC \uC11D\uD654\uB97C \uAC78\uAC8C \uD569\uB2C8\uB2E4.\r\n\r\n\uC6B4\uC601:
+    \uC18C\uC218 \uC815\uC608\uB85C \uC6B4\uC601\uD558\uBA70, \uC801\uC758 \uACE0\uAE09
+    \uC720\uB2DB(Giant, Shielder \uB4F1)\uC744 \uD558\uB098\uC529 \uB04A\uC5B4\uBA39\uC5B4
+    \uC804\uB825 \uCC28\uB97C \uBC8C\uB9BD\uB2C8\uB2E4.\r\n"
+  fallbackStrategy: {fileID: 0}
+  transitionTimeLimit: 0
+  switchOnAttackFailure: 0
+  openingBuildOrder:
+  - stepType: 0
+    unitType: 113
+    count: 3
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 0
+    unitType: 113
+    count: 2
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 1
+    unitType: 113
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 98174d0c4d8bbf94a9a3195cedf66226, type: 2}
+    weight: 0
+  midGameComposition:
+  - stepType: 0
+    unitType: 113
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 20
+  - stepType: 0
+    unitType: 108
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 10
+  - stepType: 0
+    unitType: 104
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 10
+  - stepType: 0
+    unitType: 109
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 5
+  - stepType: 0
+    unitType: 112
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 2.5
+  - stepType: 1
+    unitType: 108
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 8ec421b7fd30b4445b2828902dbae92f, type: 2}
+    weight: 10
+  - stepType: 1
+    unitType: 109
+    count: 1
+    upgradeData: {fileID: 11400000, guid: d03104d796164fb488cb2af30bddabc1, type: 2}
+    weight: 5
+  - stepType: 1
+    unitType: 104
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 72614108e808e0049a2755f3cdfe097a, type: 2}
+    weight: 7.5
+  expansionBaseWeight: 2
+  expansionSensitivity: 1.3
+  attackWaves:
+  - timing: 360
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 104
+      count: 4
+    - unitType: 108
+      count: 4
+    - unitType: 109
+      count: 2
+  - timing: 480
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 104
+      count: 6
+    - unitType: 108
+      count: 6
+    - unitType: 109
+      count: 4
+  idealWorkerCount: 12
+  expansionPolicy: 1

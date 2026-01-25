@@ -1,0 +1,113 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78474d27b4cd9464e802207e80728818, type: 3}
+  m_Name: Siren's Nightmare
+  m_EditorClassIdentifier: Assembly-CSharp::BotStrategyData
+  strategyRace: 1
+  strategyDescription: "\"\uD3B8\uC548\uD788 \uC7A0\uB4E4\uC5B4\uB77C, \uADF8\uB9AC\uACE0
+    \uC8FD\uC5B4\uB77C.\" \uC9C0\uC0C1\uAD70\uC740 \uC218\uBE44\uB9CC \uD558\uACE0,
+    \uACF5\uC911 \uC720\uB2DB\uC73C\uB85C \uC801\uC744 \uC7AC\uC6B0\uACE0 \uD559\uC0B4\uD558\uB294
+    \uD14C\uD06C\uB2C8\uCEEC\uD55C \uC804\uB7B5\uC785\uB2C8\uB2E4.\r\n\r\n\uD575\uC2EC
+    \uCEE8\uC149: \uACF5\uC911 \uD3ED\uACA9 + \uBA54\uC988\uAE30 (Sleep & Nuke)\r\n\r\n\uC8FC\uB825
+    \uC870\uD569:\r\n\r\nSuccubus (\uBABD\uB9C8\uBCD1): \uC801\uC758 \uD575\uC2EC
+    \uB51C\uB7EC\uB098 \uB300\uACF5 \uC720\uB2DB\uC744 \uC7AC\uC6C1\uB2C8\uB2E4.
+    HARVEST (\uC218\uD655)\uB85C \uC218\uBA74 \uC0C1\uD0DC\uC778 \uC801\uC5D0\uAC8C
+    \uD3ED\uB51C\uC744 \uB123\uC2B5\uB2C8\uB2E4.\r\n\r\nGargoyle (\uAC00\uACE0\uC77C):
+    \uC7A0\uB4E0 \uC801\uC5D0\uAC8C \uD504\uB9AC\uB51C\uC744 \uB123\uC5B4 CRYSTAL_SHATTER
+    (\uC218\uC815 \uD30C\uC5F4) \uC2A4\uD0DD\uC744 \uC313\uACE0 \uD130\uB728\uB9BD\uB2C8\uB2E4.\r\n\r\nBaseCorpse
+    (\uC131\uCC44): \uC9C0\uC0C1\uC740 \uC131\uCC44 \uD0C0\uC6CC\uB85C\uB9CC \uB9C9\uC2B5\uB2C8\uB2E4.\r\n\r\n\uC6B4\uC601:
+    \uAC00\uC2A4(Oil) \uC758\uC874\uB3C4\uAC00 \uB192\uC73C\uBBC0\uB85C \uBA40\uD2F0\uB97C
+    \uBE68\uB9AC \uAC00\uC838\uAC00\uACE0, \uACF5\uC911 \uBD80\uB300\uB97C \uBAA8\uC544
+    \uC801\uC758 \uB4A4\uB97C \uCE69\uB2C8\uB2E4."
+  fallbackStrategy: {fileID: 0}
+  transitionTimeLimit: 0
+  switchOnAttackFailure: 0
+  openingBuildOrder:
+  - stepType: 0
+    unitType: 113
+    count: 3
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 0
+    unitType: 113
+    count: 2
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 1
+    unitType: 113
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 98174d0c4d8bbf94a9a3195cedf66226, type: 2}
+    weight: 0
+  - stepType: 0
+    unitType: 112
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 0
+  midGameComposition:
+  - stepType: 0
+    unitType: 113
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 20
+  - stepType: 0
+    unitType: 110
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 10
+  - stepType: 0
+    unitType: 105
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 7.5
+  - stepType: 0
+    unitType: 103
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 5
+  - stepType: 1
+    unitType: 103
+    count: 1
+    upgradeData: {fileID: 11400000, guid: ea80e3a05c04299488cb445fdd073b28, type: 2}
+    weight: 2.5
+  - stepType: 1
+    unitType: 105
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 3ef490c0b5cdf354a83d9c42ba991349, type: 2}
+    weight: 7.5
+  - stepType: 1
+    unitType: 110
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 7f89b9f8a1332c8469fac08bd676365c, type: 2}
+    weight: 10
+  expansionBaseWeight: 2
+  expansionSensitivity: 1.3
+  attackWaves:
+  - timing: 360
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 110
+      count: 4
+    - unitType: 105
+      count: 3
+    - unitType: 103
+      count: 2
+  - timing: 480
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 110
+      count: 6
+    - unitType: 105
+      count: 4
+    - unitType: 103
+      count: 3
+  idealWorkerCount: 12
+  expansionPolicy: 1

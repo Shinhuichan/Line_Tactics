@@ -1,0 +1,125 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78474d27b4cd9464e802207e80728818, type: 3}
+  m_Name: Elemental Cataclysm
+  m_EditorClassIdentifier: Assembly-CSharp::BotStrategyData
+  strategyRace: 0
+  strategyDescription: "\"\uAC10\uC804\uC2DC\uD0A4\uACE0, \uD0DC\uC6B0\uACE0, \uB179\uC778\uB2E4.\"
+    \uC9C0\uC0C1\uAD70\uC758 \uD798\uC2F8\uC6C0\uBCF4\uB2E4\uB294 \uB9C8\uBC95\uACFC
+    \uC0C1\uD0DC\uC774\uC0C1(CC) \uC5F0\uACC4\uB97C \uD1B5\uD574 \uC801\uC744 \uBB34\uB825\uD654\uC2DC\uD0A4\uACE0
+    \uB179\uC5EC\uBC84\uB9AC\uB294 \uD14C\uD06C\uB2C8\uCEEC\uD55C \uC804\uB7B5\uC785\uB2C8\uB2E4.\r\n\r\n\uD575\uC2EC
+    \uCEE8\uC149: \uC0C1\uD0DC\uC774\uC0C1 \uC5F0\uACC4 (CC\uAE30 + \uC7A5\uD310\uB51C)\r\n\r\n\uC8FC\uB825
+    \uC870\uD569:\r\n\r\nBallista (\uB178\uD3EC\uBCD1): ELECTRIC_ARROW (\uAC10\uC804
+    \uD654\uC0B4)\uB85C \uC801\uC758 \uC8FC\uC694 \uC720\uB2DB\uC774\uB098 \uBB49\uCE5C
+    \uBCD1\uB825\uC744 **\uAC10\uC804(\uC2A4\uD134)**\uC2DC\uD0B5\uB2C8\uB2E4.\r\n\r\nMage
+    (\uB9C8\uBC95\uBCD1): \uAC10\uC804\uB418\uC5B4 \uC6C0\uC9C1\uC774\uC9C0 \uBABB\uD558\uB294
+    \uC801 \uC704\uC5D0 LAVA_HELL (\uC6A9\uC554 \uC9C0\uC625)\uC744 \uAE54\uC544
+    \uB179\uC5EC\uBC84\uB9BD\uB2C8\uB2E4.\r\n\r\nArcher (\uC7A5\uAD81\uBCD1): FIRE_ARROW
+    (\uBD88\uD654\uC0B4)\uB85C \uB0A8\uC740 \uC801\uC5D0\uAC8C \uD654\uC0C1 \uB370\uBBF8\uC9C0\uB97C
+    \uC785\uD799\uB2C8\uB2E4."
+  fallbackStrategy: {fileID: 0}
+  transitionTimeLimit: 0
+  switchOnAttackFailure: 0
+  openingBuildOrder:
+  - stepType: 0
+    unitType: 4
+    count: 3
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 0
+    unitType: 1
+    count: 2
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 1
+    unitType: 4
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 98174d0c4d8bbf94a9a3195cedf66226, type: 2}
+    weight: 0
+  midGameComposition:
+  - stepType: 0
+    unitType: 4
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 20
+  - stepType: 0
+    unitType: 1
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 10
+  - stepType: 0
+    unitType: 2
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 12.5
+  - stepType: 0
+    unitType: 6
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 10
+  - stepType: 0
+    unitType: 12
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 10
+  - stepType: 0
+    unitType: 8
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 2.5
+  - stepType: 1
+    unitType: 1
+    count: 1
+    upgradeData: {fileID: 11400000, guid: b73742fd500d99d42b3420bd8f9e9bd6, type: 2}
+    weight: 10
+  - stepType: 1
+    unitType: 12
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 2d91bdc5629cda84ea441b6c8cfb575e, type: 2}
+    weight: 7.5
+  - stepType: 1
+    unitType: 6
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 8ec9a75884d05e840aa22a43a8ab3fc3, type: 2}
+    weight: 7.5
+  - stepType: 1
+    unitType: 2
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 328aa6987d8e4f541a46c6800850d312, type: 2}
+    weight: 5
+  expansionBaseWeight: 2
+  expansionSensitivity: 1.2
+  attackWaves:
+  - timing: 360
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 2
+      count: 3
+    - unitType: 1
+      count: 2
+    - unitType: 6
+      count: 2
+    - unitType: 12
+      count: 2
+  - timing: 480
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 2
+      count: 5
+    - unitType: 1
+      count: 4
+    - unitType: 6
+      count: 4
+    - unitType: 12
+      count: 3
+  idealWorkerCount: 10
+  expansionPolicy: 1

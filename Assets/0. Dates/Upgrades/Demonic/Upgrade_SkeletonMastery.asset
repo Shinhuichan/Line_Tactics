@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4de408364d756884e85cdde583942b26, type: 3}
+  m_Name: Upgrade_SkeletonMastery
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
+  id: UP_SkeletonMastery
+  upgradeName: "\uD574\uACE8 \uC9C0\uBC30\uB825"
+  icon: {fileID: 0}
+  description: "\uC8FC\uC220\uBCD1\uC740 \uC774\uC81C \uD574\uACE8\uBCD1\uC744 \uCD5C\uB300
+    4\uAE30\uAE4C\uC9C0 \uB2E4\uB8F9\uB2C8\uB2E4."
+  ironCost: 50
+  oilCost: 75
+  researchTime: 0
+  preRequisites: []
+  targetType: 3
+  specificUnit: 106
+  effectType: 1
+  statType: 0
+  value: 0
+  specialAbilityKey: SKELETON_MASTERY
+  isCommonUpgrade: 0
+  raceRequirement: 1

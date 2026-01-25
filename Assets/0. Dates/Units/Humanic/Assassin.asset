@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9601219efd27249a42fd2a7167d4d4, type: 3}
+  m_Name: Assassin
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: "\uC554\uC0B4\uBCD1"
+  type: 7
+  race: 0
+  description: "\uC740\uC2E0\uC220\uB85C \uC801\uC5D0\uAC8C \uC811\uADFC\uD558\uC5EC
+    \uC6D0\uAC70\uB9AC \uC720\uB2DB\uC744 \uC6B0\uC120\uC801\uC73C\uB85C \uC81C\uAC70\uD558\uB294
+    \uC554\uC0B4\uC790\uC785\uB2C8\uB2E4. \uAE30\uC2B5 \uACF5\uACA9\uC740 \uCE58\uBA85\uC801\uC778
+    \uD53C\uD574\uB97C \uC785\uD788\uBA70, [\uC554\uC0B4] \uC5F0\uAD6C \uC2DC \uB9F9\uB3C5\uC744
+    \uCD94\uAC00\uD558\uC5EC \uC801\uC744 \uD655\uC2E4\uD558\uAC8C \uCC98\uB9AC\uD569\uB2C8\uB2E4."
+  icon: {fileID: 815374520, guid: 8e72892133560e74ca42951c47672f5e, type: 3}
+  isRangedUnit: 0
+  isFlyingUnit: 0
+  isMechanical: 0
+  ironCost: 80
+  oilCost: 25
+  hp: 105
+  defense: 0
+  moveSpeed: 2.25
+  attackRange: 0.25
+  detectRange: 4
+  attackDamage: 10
+  attackCooldown: 0.5
+  explosionRadius: 0
+  defendDistance: 2
+  racialShieldPrefab: {fileID: 0}

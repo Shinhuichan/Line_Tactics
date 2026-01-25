@@ -1,0 +1,102 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78474d27b4cd9464e802207e80728818, type: 3}
+  m_Name: Shadow & Sky
+  m_EditorClassIdentifier: Assembly-CSharp::BotStrategyData
+  strategyRace: 0
+  strategyDescription: "\"\uC801\uC758 \uB208\uAE38\uC774 \uB2FF\uC9C0 \uC54A\uB294
+    \uACF3\uC744 \uCE5C\uB2E4.\" \uC815\uBA74 \uC2B9\uBD80\uB97C \uD53C\uD558\uACE0,
+    \uC554\uC0B4\uACFC \uACF5\uC911 \uD3ED\uACA9\uC73C\uB85C \uC801\uC758 \uD575\uC2EC
+    \uB51C\uB7EC\uC640 \uC77C\uAFBC\uC744 \uB04A\uC5B4\uBA39\uB294 \uAC8C\uB9B4\uB77C
+    \uC804\uB7B5\uC785\uB2C8\uB2E4.\r\n\r\n\uD575\uC2EC \uCEE8\uC149: \uD6C4\uBC29
+    \uD0C0\uACA9 + \uC694\uC778 \uC554\uC0B4 (\uD14C\uB7EC\uD615)\r\n\r\n\uC8FC\uB825
+    \uC870\uD569:\r\n\r\nAssassin (\uC554\uC0B4\uBCD1): ASSASSINATION (\uC554\uC0B4)\uC73C\uB85C
+    \uC740\uC2E0\uD558\uC5EC \uC801\uC758 \uD0F1\uCEE4 \uB77C\uC778\uC744 \uBB34\uC2DC\uD558\uACE0
+    \uB4A4\uCABD\uC758 \uC6D0\uAC70\uB9AC/\uB9C8\uBC95 \uC720\uB2DB\uC744 \uC6D0\uD0AC\uB0C5\uB2C8\uB2E4.\r\n\r\nBalloon
+    (\uC5F4\uAE30\uAD6C): \uC9C0\uD615\uC744 \uBB34\uC2DC\uD558\uACE0 \uB0A0\uC544\uAC00
+    \uC801\uC758 \uC77C\uAFBC\uC774\uB098 \uAC74\uBB3C\uC744 \uD0C0\uACA9\uD558\uACE0,
+    \uC8FD\uC744 \uB54C\uB294 CRASH_LANDING (\uCD94\uB77D \uD3ED\uACA9)\uC73C\uB85C
+    \uC790\uD3ED\uD569\uB2C8\uB2E4.\r\n\r\n\uC6B4\uC601 \uBC29\uC2DD:\r\n\r\n\uC8FC\uB825
+    \uBCD1\uB825\uC774 \uB300\uCE58\uD558\uB294 \uCC99\uD558\uBA74\uC11C \uC554\uC0B4\uBCD1\uC744
+    \uC6B0\uD68C\uC2DC\uD0B5\uB2C8\uB2E4.\r\n\r\n\uC801 \uAE30\uC9C0\uC758 \uC790\uC6D0\uC904(\uC77C\uAFBC)\uC744
+    \uC5F4\uAE30\uAD6C\uB85C \uD14C\uB7EC\uD558\uC5EC \uACBD\uC81C\uB97C \uB9C8\uBE44\uC2DC\uD0B5\uB2C8\uB2E4.\r\n"
+  fallbackStrategy: {fileID: 11400000, guid: c70b1cb31cb3e754ab7faddd4bcf7109, type: 2}
+  transitionTimeLimit: 0
+  switchOnAttackFailure: 0
+  openingBuildOrder:
+  - stepType: 0
+    unitType: 4
+    count: 3
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 0
+    unitType: 8
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 1
+    unitType: 4
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 98174d0c4d8bbf94a9a3195cedf66226, type: 2}
+    weight: 0
+  midGameComposition:
+  - stepType: 0
+    unitType: 4
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 20
+  - stepType: 0
+    unitType: 9
+    count: 2
+    upgradeData: {fileID: 0}
+    weight: 10
+  - stepType: 0
+    unitType: 7
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 10
+  - stepType: 1
+    unitType: 7
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 81157d2b560af0b4eb38914346d3e9b8, type: 2}
+    weight: 10
+  - stepType: 1
+    unitType: 9
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 40d5328e1d9a2c949a9a10aaa15ac2ca, type: 2}
+    weight: 5
+  expansionBaseWeight: 1.5
+  expansionSensitivity: 0.9
+  attackWaves:
+  - timing: 240
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 7
+      count: 2
+    - unitType: 9
+      count: 3
+  - timing: 360
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 7
+      count: 3
+    - unitType: 9
+      count: 5
+  - timing: 480
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 7
+      count: 4
+    - unitType: 9
+      count: 7
+  idealWorkerCount: 8
+  expansionPolicy: 1

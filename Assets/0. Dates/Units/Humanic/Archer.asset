@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9601219efd27249a42fd2a7167d4d4, type: 3}
+  m_Name: Archer
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: "\uC7A5\uAD81\uBCD1"
+  type: 1
+  race: 0
+  description: "\uACF5\uACA9 \uD6C4 \uC989\uC2DC \uD6C4\uD1F4\uD558\uB294 [\uD68C\uD53C
+    \uAE30\uB3D9]\uC744 \uAD6C\uC0AC\uD558\uB294 \uD734\uBA38\uB2C9\uC758 \uC8FC\uB825
+    \uAD81\uC218\uC785\uB2C8\uB2E4. [\uBD88\uD654\uC0B4] \uC5F0\uAD6C \uC2DC \uC0AC\uAC70\uB9AC\uAC00
+    \uB300\uD3ED \uC99D\uAC00\uD558\uBA70, \uBA40\uB9AC \uC788\uB294 \uC801\uC744
+    \uBD88\uD0DC\uC6CC \uC9C0\uC18D\uC801\uC778 \uD53C\uD574\uB97C \uC785\uD799\uB2C8\uB2E4."
+  icon: {fileID: -1793761440, guid: 8e72892133560e74ca42951c47672f5e, type: 3}
+  isRangedUnit: 1
+  isFlyingUnit: 0
+  isMechanical: 0
+  ironCost: 170
+  oilCost: 0
+  hp: 90
+  defense: 0
+  moveSpeed: 1.25
+  attackRange: 2.5
+  detectRange: 8
+  attackDamage: 20
+  attackCooldown: 1
+  explosionRadius: 0
+  defendDistance: 1.5
+  racialShieldPrefab: {fileID: 0}

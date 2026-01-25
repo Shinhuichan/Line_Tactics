@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9601219efd27249a42fd2a7167d4d4, type: 3}
+  m_Name: Gargoyle
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: "\uAC00\uACE0\uC77C"
+  type: 110
+  race: 1
+  description: "\uAC19\uC740 \uB300\uC0C1\uC744 \uACF5\uACA9\uD560\uC218\uB85D \uAD11\uC120\uC758
+    \uC704\uB825\uC774 \uAC15\uB825\uD574\uC9C0\uB294 \uACF5\uC911 \uC720\uB2DB\uC785\uB2C8\uB2E4.
+    \uB2E8\uC77C \uB300\uC0C1\uC744 \uB179\uC774\uB294 \uB370 \uD2B9\uD654\uB418\uC5C8\uC73C\uBA70,
+    [\uC218\uC815 \uD30C\uC5F4] \uC5F0\uAD6C \uC2DC \uC801 \uCC98\uCE58 \uC2DC \uC751\uCD95\uB41C
+    \uC5D0\uB108\uC9C0\uB97C \uD3ED\uBC1C\uC2DC\uCF1C \uC8FC\uBCC0\uC5D0 \uD53C\uD574\uB97C
+    \uC785\uD799\uB2C8\uB2E4."
+  icon: {fileID: 1187822343, guid: e8f3f1a40b9f82343b3b3733dbef507a, type: 3}
+  worldSprite: {fileID: 0}
+  isRangedUnit: 1
+  isFlyingUnit: 1
+  isMechanical: 0
+  constructionTime: 10
+  ironCost: 75
+  oilCost: 50
+  hp: 65
+  defense: 50
+  moveSpeed: 2
+  attackRange: 2.75
+  detectRange: 8
+  attackDamage: 5
+  attackCooldown: 0.5
+  explosionRadius: 0
+  defendDistance: 1.5
+  racialShieldPrefab: {fileID: 0}

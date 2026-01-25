@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9601219efd27249a42fd2a7167d4d4, type: 3}
+  m_Name: Healer
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: "\uCE58\uC720\uBCD1"
+  type: 5
+  race: 0
+  description: "\uC804\uC7A5\uC758 \uBD80\uC0C1\uC790\uB97C \uCC3E\uC544\uB2E4\uB2C8\uBA70
+    \uC0DD\uBA85\uB825\uC744 \uD68C\uBCF5\uC2DC\uD0A4\uB294 \uC9C0\uC6D0 \uC720\uB2DB\uC785\uB2C8\uB2E4.
+    \uAC00\uC7A5 \uC704\uAE09\uD55C \uC544\uAD70\uC744 \uC6B0\uC120\uC801\uC73C\uB85C
+    \uCE58\uB8CC\uD558\uBA70, [\uC0C1\uD0DC \uCE58\uC720] \uC5F0\uAD6C \uC2DC \uC544\uAD70\uC758
+    \uBAA8\uB4E0 \uC0C1\uD0DC \uC774\uC0C1\uC744 \uC815\uD654\uD558\uACE0 \uD68C\uBCF5\uB7C9\uC744
+    \uC99D\uD3ED\uC2DC\uD0B5\uB2C8\uB2E4."
+  icon: {fileID: -2029779652, guid: 8e72892133560e74ca42951c47672f5e, type: 3}
+  isRangedUnit: 1
+  isFlyingUnit: 0
+  isMechanical: 0
+  ironCost: 55
+  oilCost: 35
+  hp: 105
+  defense: 0
+  moveSpeed: 1
+  attackRange: 2
+  detectRange: 15
+  attackDamage: 25
+  attackCooldown: 1.75
+  explosionRadius: 0
+  defendDistance: 1.75
+  racialShieldPrefab: {fileID: 0}

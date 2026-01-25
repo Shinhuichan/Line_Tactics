@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4de408364d756884e85cdde583942b26, type: 3}
+  m_Name: Upgrade_EnhancedHarpoon
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
+  id: UP_EnhancedHarpoon
+  upgradeName: "\uC791\uC0B4 \uAC15\uD654"
+  icon: {fileID: 0}
+  description: "\uC791\uC0B4\uBCD1\uC758 \uC791\uC0B4\uC758 \uC0AC\uAC70\uB9AC\uAC00
+    \uC99D\uAC00\uD569\uB2C8\uB2E4.\n\uC801\uC744 \uACF5\uACA9\uD558\uBA74 \uC8FC\uBCC0\uC758
+    \uC544\uAD70\uC744 \uAC15\uD654\uD569\uB2C8\uB2E4."
+  ironCost: 50
+  oilCost: 50
+  researchTime: 0
+  preRequisites: []
+  targetType: 3
+  specificUnit: 104
+  effectType: 1
+  statType: 0
+  value: 0
+  specialAbilityKey: ENHANCED_HARPOON
+  isCommonUpgrade: 0
+  raceRequirement: 1

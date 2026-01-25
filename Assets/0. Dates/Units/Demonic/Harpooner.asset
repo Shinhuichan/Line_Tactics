@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9601219efd27249a42fd2a7167d4d4, type: 3}
+  m_Name: Harpooner
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: "\uC791\uC0B4\uBCD1"
+  type: 104
+  race: 1
+  description: "\uC801\uC744 \uC791\uC0B4\uB85C \uB04C\uC5B4\uC640 \uAE30\uC808\uC2DC\uD0A4\uB294
+    \uB0A9\uCE58 \uC804\uBB38\uAC00\uC785\uB2C8\uB2E4. \uAE4C\uB2E4\uB85C\uC6B4 \uC6D0\uAC70\uB9AC
+    \uC720\uB2DB\uC744 \uC6B0\uC120\uC801\uC73C\uB85C \uD3EC\uD68D\uD558\uBA70, [\uC791\uC0B4
+    \uAC15\uD654] \uC5F0\uAD6C \uC2DC \uACF5\uACA9\uD560 \uB54C\uB9C8\uB2E4 \uC8FC\uBCC0
+    \uC544\uAD70\uC758 \uACF5\uACA9 \uC18D\uB3C4\uB97C \uB192\uC5EC \uD654\uB825\uC744
+    \uC9C0\uC6D0\uD569\uB2C8\uB2E4."
+  icon: {fileID: -2047341844, guid: e8f3f1a40b9f82343b3b3733dbef507a, type: 3}
+  isRangedUnit: 0
+  isFlyingUnit: 0
+  isMechanical: 0
+  ironCost: 75
+  oilCost: 30
+  hp: 110
+  defense: 0
+  moveSpeed: 2
+  attackRange: 2.5
+  detectRange: 6
+  attackDamage: 10
+  attackCooldown: 2
+  explosionRadius: 0
+  defendDistance: 2.25
+  racialShieldPrefab: {fileID: 0}

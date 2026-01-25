@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4de408364d756884e85cdde583942b26, type: 3}
+  m_Name: Upgrade_Mining_2
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
+  id: UP_MINE_2
+  upgradeName: "\uCC44\uAD74 \uC219\uB828 II"
+  icon: {fileID: 0}
+  description: "\uC77C\uAFBC\uC758 \uC790\uC6D0 \uC6B4\uBC18\uB7C9\uC774 \uCD5C\uB300\uD654\uB429\uB2C8\uB2E4.\\n(\uCCA0
+    24->30, \uAE30\uB984 8->10)"
+  ironCost: 250
+  oilCost: 85
+  researchTime: 10
+  preRequisites:
+  - {fileID: 11400000, guid: 98174d0c4d8bbf94a9a3195cedf66226, type: 2}
+  targetType: 3
+  specificUnit: 4
+  effectType: 1
+  statType: 0
+  value: 0
+  specialAbilityKey: MINING_2
+  isCommonUpgrade: 1
+  raceRequirement: 0

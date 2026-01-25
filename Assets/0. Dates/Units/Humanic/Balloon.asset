@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9601219efd27249a42fd2a7167d4d4, type: 3}
+  m_Name: Balloon
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: "\uC5F4\uAE30\uAD6C"
+  type: 9
+  race: 0
+  description: "\uC9C0\uC0C1\uC758 \uC801\uC5D0\uAC8C \uD3ED\uD0C4\uC744 \uD22C\uD558\uD574
+    \uAD11\uC5ED \uD53C\uD574\uB97C \uC785\uD788\uB294 \uACF5\uC911 \uC720\uB2DB\uC785\uB2C8\uB2E4.
+    [\uCD94\uB77D\uC0AC\uACE0] \uC5F0\uAD6C \uC2DC \uB0B4\uAD6C\uB3C4\uAC00 \uC0C1\uC2B9\uD558\uBA70,
+    \uACA9\uCD94\uB420 \uB54C \uC801\uC9C4\uC73C\uB85C \uACE4\uB450\uBC15\uC9C8\uCCD0
+    \uCD5C\uD6C4\uC758 \uC790\uD3ED \uACF5\uACA9\uC744 \uAC10\uD589\uD569\uB2C8\uB2E4."
+  icon: {fileID: 1563125203, guid: 8e72892133560e74ca42951c47672f5e, type: 3}
+  isRangedUnit: 0
+  isFlyingUnit: 1
+  isMechanical: 1
+  ironCost: 130
+  oilCost: 40
+  hp: 240
+  defense: 10
+  moveSpeed: 1
+  attackRange: 0
+  detectRange: 6
+  attackDamage: 20
+  attackCooldown: 1.5
+  explosionRadius: 1
+  defendDistance: 2.5
+  racialShieldPrefab: {fileID: 0}

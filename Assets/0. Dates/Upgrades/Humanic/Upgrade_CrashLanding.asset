@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4de408364d756884e85cdde583942b26, type: 3}
+  m_Name: Upgrade_CrashLanding
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
+  id: UP_CrashLanding
+  upgradeName: "\uCD94\uB77D\uC0AC\uACE0"
+  icon: {fileID: 0}
+  description: "\uC5F4\uAE30\uAD6C\uAC00 \uCCB4\uB825\uC744 \uB2E4 \uD558\uBA74\uC11C
+    \uBC11\uC758 \uC801 \uC720\uB2DB\uC5D0\uAC8C \uD53C\uD574\uB97C \uC90D\uB2C8\uB2E4.
+    \uB610\uD55C \uCCB4\uB825\uC774 20% \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  ironCost: 200
+  oilCost: 0
+  researchTime: 5
+  preRequisites: []
+  targetType: 0
+  specificUnit: 0
+  effectType: 1
+  statType: 0
+  value: 0
+  specialAbilityKey: CRASH_LANDING

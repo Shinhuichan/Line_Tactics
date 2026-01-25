@@ -1,0 +1,121 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78474d27b4cd9464e802207e80728818, type: 3}
+  m_Name: Abyssal Swarm
+  m_EditorClassIdentifier: Assembly-CSharp::BotStrategyData
+  strategyRace: 1
+  strategyDescription: "\U0001F479 Demonic 5\uB300 \uC804\uB7B5 \uAE30\uD68D\uC548\r\n1.
+    [Abyssal Swarm] (\uC2EC\uC5F0\uC758 \uAD70\uC138)\r\n\"\uC8FD\uC5EC\uB3C4 \uC8FD\uC5EC\uB3C4
+    \uB05D\uC774 \uC5C6\uB2E4.\" \uAC12\uC2FC \uC720\uB2DB\uC744 \uC0B0\uAC1C\uD558\uC5EC
+    \uC18C\uBAA8\uC804\uC744 \uC720\uB3C4\uD558\uACE0, \uC911\uC694 \uC21C\uAC04\uC5D0
+    \uC790\uD3ED\uBCD1\uC744 \uB358\uC838 \uC804\uC120\uC744 \uB6AB\uC5B4\uBC84\uB9AC\uB294
+    \uBB3C\uB7C9 \uACF5\uC138 \uC804\uB7B5\uC785\uB2C8\uB2E4.\r\n\r\n\uD575\uC2EC
+    \uCEE8\uC149: \uCD08\uBC18 \uB7EC\uC26C + \uC18C\uBAA8\uC804 (Zergling Style)\r\n\r\n\uC8FC\uB825
+    \uC870\uD569:\r\n\r\nSkirmisher (\uCC99\uD6C4\uBCD1): FLEE (\uB3C4\uC8FC) \uB2A5\uB825\uC744
+    \uBBFF\uACE0 \uC801\uC9C4 \uAE4A\uC219\uC774 \uCC14\uB7EC \uB123\uC2B5\uB2C8\uB2E4.
+    \uC8FD\uAE30 \uC9C1\uC804\uC5D0 \uB3C4\uB9DD\uAC00\uC11C \uC5B4\uADF8\uB85C\uB97C
+    \uBE8D\uB2C8\uB2E4.\r\n\r\nBomber (\uC790\uD3ED\uBCD1): KAMIKAZE (\uCE74\uBBF8\uCE74\uC81C)
+    \uC5C5\uADF8\uB808\uC774\uB4DC\uB85C \uC801\uC758 \uBC29\uC5B4\uC120(Shielder
+    \uB4F1)\uC744 \uB109\uBC31/\uAE30\uC808\uC2DC\uCF1C \uAD6C\uBA4D\uC744 \uB0C5\uB2C8\uB2E4.\r\n\r\n\uC6B4\uC601:
+    \uC77C\uAFBC\uC744 \uC801\uB2F9\uD788 \uBF51\uACE0 \uBCD1\uC601\uC744 \uB298\uB824
+    \uD68C\uC804\uB825\uC73C\uB85C \uC2B9\uBD80\uD569\uB2C8\uB2E4.\r\n"
+  fallbackStrategy: {fileID: 11400000, guid: bda00a113f393d54baf2ff80dc3d69bc, type: 2}
+  transitionTimeLimit: 0
+  switchOnAttackFailure: 0
+  openingBuildOrder:
+  - stepType: 0
+    unitType: 113
+    count: 3
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 0
+    unitType: 100
+    count: 3
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 0
+    unitType: 101
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 1
+    unitType: 113
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 98174d0c4d8bbf94a9a3195cedf66226, type: 2}
+    weight: 0
+  midGameComposition:
+  - stepType: 0
+    unitType: 100
+    count: 3
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 0
+    unitType: 101
+    count: 2
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 1
+    unitType: 100
+    count: 2
+    upgradeData: {fileID: 11400000, guid: cadeef76fe69dbe408b53124a921a515, type: 2}
+    weight: 25
+  - stepType: 1
+    unitType: 101
+    count: 2
+    upgradeData: {fileID: 11400000, guid: b104633f49c316944a85042b98203880, type: 2}
+    weight: 25
+  - stepType: 0
+    unitType: 101
+    count: 2
+    upgradeData: {fileID: 0}
+    weight: 5
+  - stepType: 0
+    unitType: 100
+    count: 3
+    upgradeData: {fileID: 0}
+    weight: 10
+  - stepType: 0
+    unitType: 110
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 2.5
+  - stepType: 0
+    unitType: 113
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 10
+  - stepType: 0
+    unitType: 112
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 2.5
+  expansionBaseWeight: 1
+  expansionSensitivity: 0.65
+  attackWaves:
+  - timing: 240
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 100
+      count: 10
+    - unitType: 101
+      count: 4
+  - timing: 360
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 100
+      count: 14
+    - unitType: 101
+      count: 4
+    - unitType: 110
+      count: 2
+  idealWorkerCount: 7
+  expansionPolicy: 1

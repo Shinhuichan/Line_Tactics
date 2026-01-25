@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9601219efd27249a42fd2a7167d4d4, type: 3}
+  m_Name: Necromancer
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: "\uC8FC\uC220\uBCD1"
+  type: 106
+  race: 1
+  description: "\uD574\uACE8 \uBCD1\uC0AC\uB97C \uC18C\uD658\uD574 \uC2F8\uC6B0\uAC8C
+    \uD558\uB294 \uC9C0\uD718\uAD00\uC785\uB2C8\uB2E4. \uC18C\uD658\uC218\uC5D0\uAC8C
+    \uACF5\uACA9 \uBA85\uB839\uACFC \uAC00\uC18D \uBC84\uD504\uB97C \uB0B4\uB9AC\uBA70,
+    [\uD574\uACE8 \uC9C0\uBC30\uB825] \uC5F0\uAD6C \uC2DC \uCD5C\uB300 4\uAE30\uC758
+    \uD574\uACE8\uC744 \uAC70\uB290\uB824 \uBB3C\uB7C9\uC73C\uB85C \uC801\uC744 \uC81C\uC555\uD569\uB2C8\uB2E4."
+  icon: {fileID: -763218949, guid: e8f3f1a40b9f82343b3b3733dbef507a, type: 3}
+  isRangedUnit: 1
+  isFlyingUnit: 0
+  isMechanical: 0
+  ironCost: 50
+  oilCost: 125
+  hp: 75
+  defense: 0
+  moveSpeed: 0.75
+  attackRange: 3.5
+  detectRange: 10
+  attackDamage: 0
+  attackCooldown: 4
+  explosionRadius: 0
+  defendDistance: 1.25
+  racialShieldPrefab: {fileID: 0}

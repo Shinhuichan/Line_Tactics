@@ -1,0 +1,98 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78474d27b4cd9464e802207e80728818, type: 3}
+  m_Name: Titan's March
+  m_EditorClassIdentifier: Assembly-CSharp::BotStrategyData
+  strategyRace: 1
+  strategyDescription: "\"\uC555\uB3C4\uC801\uC778 \uD798\uC73C\uB85C \uC9D3\uBC1F\uC73C\uB9AC\uB77C.\"
+    \uCD08\uBC18\uC744 \uD3EC\uAE30\uD558\uACE0 \uC790\uC6D0\uC744 \uADF9\uB3C4\uB85C
+    \uBAA8\uC544, \uD6C4\uBC18\uC5D0 \uCD5C\uC885 \uBCD1\uAE30\uB4E4\uC744 \uC3DF\uC544\uB0B4\uB294
+    \uD55C\uBC29 \uC804\uB7B5\uC785\uB2C8\uB2E4.\r\n\r\n\uD575\uC2EC \uCEE8\uC149:
+    \uCD5C\uC885 \uD14C\uD06C + \uAD11\uC5ED \uAE30\uC808 (Late Game Deathball)\r\n\r\n\uC8FC\uB825
+    \uC870\uD569:\r\n\r\nGiant (\uAC70\uC778\uBCD1): SMASH\uB85C \uAD11\uC5ED \uAE30\uC808\uC744
+    \uAC78\uBA70 \uC9C4\uACA9\uD569\uB2C8\uB2E4.\r\n\r\nTrumpeter (\uB098\uD314\uBCD1):
+    SLAUGHTER_HORN (\uC0B4\uC721\uC758 \uB098\uD314)\uC744 \uBD88\uC5B4 \uAC70\uC778\uB4E4\uC758
+    \uACF5\uC18D\uC744 \uBBF8\uCE5C\uB4EF\uC774 \uC62C\uB9BD\uB2C8\uB2E4.\r\n\r\nSlave
+    (\uB178\uC608\uBCD1): \uC5C4\uCCAD\uB09C \uC790\uC6D0 \uC18C\uBAA8\uB97C \uAC10\uB2F9\uD558\uAE30
+    \uC704\uD574 \uB9F5 \uC804\uCCB4\uC5D0 \uBA40\uD2F0\uB97C \uD3C5\uB2C8\uB2E4.\r\n\r\n\uC6B4\uC601:
+    \uCD08\uBC18 5\uBD84\uC740 \uAE30\uC9C0 \uBC29\uC5B4\uC5D0\uB9CC \uC9D1\uC911\uD558\uB2E4\uAC00,
+    \uAC70\uC778 3\uAE30\uAC00 \uBAA8\uC774\uB294 \uC21C\uAC04 \uC9C4\uCD9C\uD558\uC5EC
+    \uAC8C\uC784\uC744 \uB05D\uB0C5\uB2C8\uB2E4."
+  fallbackStrategy: {fileID: 0}
+  transitionTimeLimit: 0
+  switchOnAttackFailure: 0
+  openingBuildOrder:
+  - stepType: 0
+    unitType: 113
+    count: 3
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 0
+    unitType: 112
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 1
+    unitType: 113
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 98174d0c4d8bbf94a9a3195cedf66226, type: 2}
+    weight: 0
+  midGameComposition:
+  - stepType: 0
+    unitType: 113
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 30
+  - stepType: 1
+    unitType: 113
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 4dc1ad903378a6e45a2da9a361d92002, type: 2}
+    weight: 15
+  - stepType: 0
+    unitType: 111
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 5
+  - stepType: 0
+    unitType: 109
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 2.5
+  - stepType: 1
+    unitType: 111
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 271161bb4e52ff34a9aa255f2b50781b, type: 2}
+    weight: 10
+  - stepType: 1
+    unitType: 111
+    count: 1
+    upgradeData: {fileID: 11400000, guid: e64712e31e8b76f41beb05b646dacd2d, type: 2}
+    weight: 10
+  expansionBaseWeight: 2.5
+  expansionSensitivity: 1.525
+  attackWaves:
+  - timing: 480
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 111
+      count: 3
+    - unitType: 109
+      count: 3
+  - timing: 560
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 111
+      count: 4
+    - unitType: 109
+      count: 4
+  idealWorkerCount: 15
+  expansionPolicy: 1

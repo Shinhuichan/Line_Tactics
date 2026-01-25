@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9601219efd27249a42fd2a7167d4d4, type: 3}
+  m_Name: FlagBearer
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: "\uAE30\uC218\uBCD1"
+  type: 10
+  race: 0
+  description: "\uAE43\uBC1C\uC744 \uB4E4\uC5B4 \uC8FC\uBCC0 \uC544\uAD70\uC758 \uBC29\uC5B4\uB825\uC744
+    \uB192\uC774\uB294 \uC9C0\uC6D0 \uC720\uB2DB\uC785\uB2C8\uB2E4. \uC804\uD22C
+    \uB300\uC2E0 \uC544\uAD70\uC774 \uBC00\uC9D1\uD55C \uCD5C\uC801\uC758 \uC704\uCE58\uB97C
+    \uCC3E\uC544 \uC774\uB3D9\uD558\uBA70, [\uC7A5\uB9C9] \uC5F0\uAD6C \uC2DC \uCD94\uAC00\uB85C
+    \uBCF4\uD638\uB9C9\uC744 \uBD80\uC5EC\uD574 \uC0DD\uC874\uB825\uC744 \uADF9\uB300\uD654\uD569\uB2C8\uB2E4."
+  icon: {fileID: -509493506, guid: 8e72892133560e74ca42951c47672f5e, type: 3}
+  isRangedUnit: 0
+  isFlyingUnit: 0
+  isMechanical: 0
+  ironCost: 65
+  oilCost: 30
+  hp: 200
+  defense: 15
+  moveSpeed: 1.75
+  attackRange: 2.5
+  detectRange: 8
+  attackDamage: 10
+  attackCooldown: 0.5
+  explosionRadius: 0
+  defendDistance: 2.25
+  racialShieldPrefab: {fileID: 0}

@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9601219efd27249a42fd2a7167d4d4, type: 3}
+  m_Name: Ballista
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: "\uB178\uD3EC\uBCD1"
+  type: 12
+  race: 0
+  description: "\uAC74\uBB3C\uC5D0 \uAC15\uB825\uD55C \uCD94\uAC00 \uD53C\uD574\uB97C
+    \uC785\uD788\uB294 \uC7A5\uAC70\uB9AC \uACF5\uC131 \uBCD1\uAE30\uC785\uB2C8\uB2E4.
+    [\uAC10\uC804 \uD654\uC0B4] \uC5F0\uAD6C \uC2DC \uC801\uC911\uD55C \uB300\uC0C1\uC744
+    \uC77C\uC2DC\uC801\uC73C\uB85C \uAC10\uC804\uC2DC\uCF1C \uD589\uB3D9\uC744 \uBD09\uC1C4\uD558\uBBC0\uB85C,
+    \uC801\uC758 \uBC29\uC5B4\uC120\uC744 \uBB34\uB825\uD654\uD558\uB294 \uB370 \uD0C1\uC6D4\uD569\uB2C8\uB2E4."
+  icon: {fileID: 1257717802, guid: 8e72892133560e74ca42951c47672f5e, type: 3}
+  isRangedUnit: 0
+  isFlyingUnit: 0
+  isMechanical: 1
+  ironCost: 80
+  oilCost: 45
+  hp: 225
+  defense: 25
+  moveSpeed: 0.5
+  attackRange: 8.5
+  detectRange: 10
+  attackDamage: 50
+  attackCooldown: 3
+  explosionRadius: 0
+  defendDistance: 1.25
+  racialShieldPrefab: {fileID: 0}

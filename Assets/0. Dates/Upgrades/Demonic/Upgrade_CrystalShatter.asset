@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4de408364d756884e85cdde583942b26, type: 3}
+  m_Name: Upgrade_CrystalShatter
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
+  id: UP_CrystalShatter
+  upgradeName: "\uC218\uC815 \uD30C\uC5F4"
+  icon: {fileID: 0}
+  description: "\uAC00\uACE0\uC77C\uC758 \uACF5\uACA9\uC73C\uB85C \uC8FD\uC740 \uC720\uB2DB\uC5D0\uAC8C
+    \uD3ED\uBC1C\uC744 \uC77C\uC73C\uD0A4\uAC8C \uD569\uB2C8\uB2E4.\n\uAC00\uACE0\uC77C\uC758
+    \uACF5\uACA9\uC5D0 \uD53C\uACA9\uB41C \uC720\uB2DB\uC774 \uC0AC\uB9DD\uD558\uBA74
+    \uACF5\uACA9\uBC1B\uC740 \uD69F\uC218\uC5D0 \uBE44\uB840\uD558\uC5EC\n\uAD11\uC5ED
+    \uD53C\uD574\uB97C \uC90D\uB2C8\uB2E4."
+  ironCost: 150
+  oilCost: 25
+  researchTime: 0
+  preRequisites: []
+  targetType: 3
+  specificUnit: 110
+  effectType: 1
+  statType: 0
+  value: 0
+  specialAbilityKey: CRYSTAL_SHATTER
+  isCommonUpgrade: 0
+  raceRequirement: 1

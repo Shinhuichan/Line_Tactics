@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9601219efd27249a42fd2a7167d4d4, type: 3}
+  m_Name: Gluttony
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: "\uD3ED\uC2DD\uBCD1"
+  type: 103
+  race: 1
+  description: "\uC801\uC744 \uCC98\uCE58\uD560\uC218\uB85D \uCD5C\uB300 \uCCB4\uB825\uC774
+    \uB298\uC5B4\uB098\uB294 \uC131\uC7A5\uD615 \uD0F1\uCEE4\uC785\uB2C8\uB2E4. [\uC7A1\uC2DD]
+    \uC5F0\uAD6C \uC2DC \uC801\uC744 \uACF5\uACA9\uD574 \uCCB4\uB825\uC744 \uD68C\uBCF5\uD558\uB294
+    \uD761\uD608 \uB2A5\uB825\uC744 \uC5BB\uC5B4, \uC804\uC7A5\uC5D0\uC11C \uB048\uC9C8\uAE30\uAC8C
+    \uC0B4\uC544\uB0A8\uC544 \uC801\uC744 \uC555\uB3C4\uD569\uB2C8\uB2E4."
+  icon: {fileID: -918717546, guid: e8f3f1a40b9f82343b3b3733dbef507a, type: 3}
+  isRangedUnit: 0
+  isFlyingUnit: 0
+  isMechanical: 0
+  ironCost: 175
+  oilCost: 10
+  hp: 320
+  defense: 0
+  moveSpeed: 1
+  attackRange: 0.25
+  detectRange: 6
+  attackDamage: 30
+  attackCooldown: 2
+  explosionRadius: 0
+  defendDistance: 3
+  racialShieldPrefab: {fileID: 0}

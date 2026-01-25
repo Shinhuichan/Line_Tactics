@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9601219efd27249a42fd2a7167d4d4, type: 3}
+  m_Name: Cavalry
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: "\uAE30\uB9C8\uBCD1"
+  type: 3
+  race: 0
+  description: "\uD3ED\uBC1C\uC801\uC778 \uC18D\uB3C4\uB85C \uC801\uC5D0\uAC8C \uB3CC\uC9C4\uD574
+    \uCE58\uBA85\uC801\uC778 \uD53C\uD574\uC640 \uB109\uBC31\uC744 \uC785\uD788\uB294
+    \uAE30\uC2B5\uC758 \uC804\uBB38\uAC00\uC785\uB2C8\uB2E4. [\uCE58\uACE0 \uBE60\uC9C0\uAE30]
+    \uC5F0\uAD6C \uC2DC \uD0C0\uACA9 \uD6C4 \uC989\uC2DC \uC774\uD0C8\uD558\uB294
+    \uC804\uC220\uB85C \uC801\uC758 \uC9C4\uD615\uC744 \uD6A8\uACFC\uC801\uC73C\uB85C
+    \uBD95\uAD34\uC2DC\uD0B5\uB2C8\uB2E4."
+  icon: {fileID: -752331211, guid: 8e72892133560e74ca42951c47672f5e, type: 3}
+  isRangedUnit: 0
+  isFlyingUnit: 0
+  isMechanical: 0
+  ironCost: 100
+  oilCost: 15
+  hp: 165
+  defense: 5
+  moveSpeed: 2.5
+  attackRange: 0.5
+  detectRange: 10
+  attackDamage: 25
+  attackCooldown: 2
+  explosionRadius: 0
+  defendDistance: 2
+  racialShieldPrefab: {fileID: 0}

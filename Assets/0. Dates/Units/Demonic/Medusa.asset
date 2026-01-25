@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9601219efd27249a42fd2a7167d4d4, type: 3}
+  m_Name: Medusa
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: "\uBA54\uB450\uC0AC"
+  type: 108
+  race: 1
+  description: "\uC2DC\uC120\uC774 \uB2FF\uB294 \uBAA8\uB4E0 \uC0DD\uBA85\uCCB4\uB97C
+    \uC989\uC2DC \uB3CC\uB85C \uB9CC\uB4E4\uC5B4 \uD30C\uAD34\uD558\uB294 \uACF5\uD3EC\uC758
+    \uC874\uC7AC\uC785\uB2C8\uB2E4. \uAE30\uACC4 \uC18D\uC131 \uC801\uC5D0\uAC8C\uB294
+    \uAC15\uB825\uD55C \uD53C\uD574\uB97C \uC785\uD788\uBA70, [\uB3C5\uC0AC\uC758
+    \uB9F9\uB3C5] \uC5F0\uAD6C \uC2DC \uC801\uC744 \uC911\uB3C5\uC2DC\uCF1C \uC9C0\uC18D\uC801\uC778
+    \uACE0\uD1B5\uC744 \uC548\uACA8\uC90D\uB2C8\uB2E4."
+  icon: {fileID: 1372947280, guid: e8f3f1a40b9f82343b3b3733dbef507a, type: 3}
+  isRangedUnit: 1
+  isFlyingUnit: 0
+  isMechanical: 0
+  ironCost: 105
+  oilCost: 85
+  hp: 95
+  defense: 5
+  moveSpeed: 1
+  attackRange: 1.5
+  detectRange: 8
+  attackDamage: 50
+  attackCooldown: 6.5
+  explosionRadius: 0
+  defendDistance: 1.75
+  racialShieldPrefab: {fileID: 0}

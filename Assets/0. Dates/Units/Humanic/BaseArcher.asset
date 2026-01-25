@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9601219efd27249a42fd2a7167d4d4, type: 3}
+  m_Name: BaseArcher
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: "\uC131\uCC44 \uC7A5\uAD81\uBCD1"
+  type: 8
+  race: 0
+  description: 
+  icon: {fileID: -563332752, guid: 8e72892133560e74ca42951c47672f5e, type: 3}
+  isRangedUnit: 1
+  isFlyingUnit: 0
+  isMechanical: 0
+  ironCost: 255
+  oilCost: 0
+  hp: 100000
+  defense: 0
+  moveSpeed: 0
+  attackRange: 10
+  detectRange: 12
+  attackDamage: 20
+  attackCooldown: 1
+  explosionRadius: 0
+  defendDistance: 0
+  racialShieldPrefab: {fileID: 0}

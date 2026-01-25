@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9601219efd27249a42fd2a7167d4d4, type: 3}
+  m_Name: Trumpeter
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: "\uB098\uD314\uBCD1"
+  type: 109
+  race: 1
+  description: "\uB098\uD314 \uC18C\uB9AC\uB85C \uC544\uAD70\uC758 \uD22C\uC7C1\uC2EC\uC744
+    \uC790\uADF9\uD574 \uACF5\uACA9 \uC18D\uB3C4\uB97C \uB192\uC785\uB2C8\uB2E4.
+    [\uC0B4\uC721\uC758 \uB098\uD314] \uC5F0\uAD6C \uC2DC \uC544\uAD70\uC744 \uAD11\uB780
+    \uC0C1\uD0DC\uB85C \uB9CC\uB4E4\uC5B4, \uBC1B\uB294 \uD53C\uD574\uAC00 \uB298\uC5B4\uB098\uB294
+    \uC704\uD5D8\uC744 \uAC10\uC218\uD558\uACE0 \uACF5\uACA9 \uC18D\uB3C4\uB97C \uD3ED\uBC1C\uC801\uC73C\uB85C
+    \uC99D\uAC00\uC2DC\uD0B5\uB2C8\uB2E4."
+  icon: {fileID: -207385624, guid: e8f3f1a40b9f82343b3b3733dbef507a, type: 3}
+  isRangedUnit: 1
+  isFlyingUnit: 0
+  isMechanical: 0
+  ironCost: 25
+  oilCost: 45
+  hp: 80
+  defense: 5
+  moveSpeed: 1.5
+  attackRange: 2
+  detectRange: 15
+  attackDamage: 5
+  attackCooldown: 1
+  explosionRadius: 0
+  defendDistance: 1.25
+  racialShieldPrefab: {fileID: 0}

@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4de408364d756884e85cdde583942b26, type: 3}
+  m_Name: Upgrade_Harvest
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
+  id: UP_Harvest
+  upgradeName: "\uC218\uD655"
+  icon: {fileID: 0}
+  description: "\uBABD\uB9C8\uBCD1\uC740 \uC774\uC81C \uC7AC\uC6B4 \uC801\uB4E4\uC758
+    \uC815\uAE30\uB97C \uBE68\uC544\uBA39\uC2B5\uB2C8\uB2E4.\n\uC0AC\uAC70\uB9AC
+    \uB0B4\uC758 \uC218\uBA74 \uC0C1\uD0DC\uC758 \uC801\uC744 \uC218\uD655\uD569\uB2C8\uB2E4!"
+  ironCost: 25
+  oilCost: 75
+  researchTime: 0
+  preRequisites: []
+  targetType: 3
+  specificUnit: 105
+  effectType: 1
+  statType: 0
+  value: 0
+  specialAbilityKey: Harvest
+  isCommonUpgrade: 0
+  raceRequirement: 1

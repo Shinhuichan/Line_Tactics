@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78474d27b4cd9464e802207e80728818, type: 3}
+  m_Name: Berserker Rush
+  m_EditorClassIdentifier: Assembly-CSharp::BotStrategyData
+  strategyRace: 0
+  strategyDescription: "[Berserker Rush] (\uAD11\uC804\uC0AC \uB7EC\uC26C)\n\"\uB0B4
+    \uC0B4\uC744 \uAE4E\uC544 \uB108\uC758 \uBF08\uB97C \uCDE8\uD55C\uB2E4.\" \uCD08\uBC18\uBD80\uD130
+    \uC274 \uC0C8 \uC5C6\uC774 \uBAB0\uC544\uCCD0 \uC801\uC774 \uC228 \uC274 \uD2C8\uC744
+    \uC8FC\uC9C0 \uC54A\uB294 \uD558\uC774 \uB9AC\uC2A4\uD06C \uD558\uC774 \uB9AC\uD134
+    \uC804\uB7B5\uC785\uB2C8\uB2E4.\n\n\uD575\uC2EC \uCEE8\uC149: \uCD08\uBC18 \uBB3C\uB7C9
+    \uACF5\uC138 + \uC790\uD574 \uBC84\uD504\uB97C \uD1B5\uD55C \uC2A4\uD399 \uBEE5\uD280\uAE30\n\n\uC8FC\uB825
+    \uC870\uD569:\n\nSwordsman (\uB300\uAC80\uBCD1): FURY (\uACA9\uB178) \uC5C5\uADF8\uB808\uC774\uB4DC\uAC00
+    \uD575\uC2EC. \uCCB4\uB825\uC744 \uC18C\uBAA8\uD558\uC9C0\uB9CC \uACF5\uC18D/\uC774\uC18D\uC774
+    \uD3ED\uBC1C\uC801\uC73C\uB85C \uC99D\uAC00\uD558\uC5EC \uC801 \uB77C\uC778\uC744
+    \uCC22\uC5B4\uBC84\uB9BD\uB2C8\uB2E4.\n\nHealer (\uCE58\uC720\uBCD1): \uB300\uAC80\uBCD1\uC774
+    FURY\uB85C \uAE4E\uC544\uBA39\uC740 \uCCB4\uB825\uC744 \uB4A4\uC5D0\uC11C \uCC44\uC6CC\uC8FC\uBA70
+    \uC804\uD22C \uC9C0\uC18D\uB825\uC744 \uB192\uC785\uB2C8\uB2E4.\n\n\uC6B4\uC601
+    \uBC29\uC2DD:\n\n\uC77C\uAFBC\uC744 \uCD5C\uC18C\uD55C\uC73C\uB85C \uC720\uC9C0\uD558\uACE0
+    \uBE60\uB974\uAC8C \uBCD1\uC601\uC744 \uAC74\uC124.\n\nFURY \uC5F0\uAD6C\uAC00
+    \uC644\uB8CC\uB418\uB294 \uC21C\uAC04 \uD0C0\uC774\uBC0D \uB7EC\uC26C.\n\n\uC801\uC758
+    \uBC29\uC5B4\uC120\uC774 \uAD6C\uCD95\uB418\uAE30 \uC804\uC5D0 \uB05D\uB0B4\uB294
+    \uAC83\uC774 \uBAA9\uD45C\uC785\uB2C8\uB2E4."
+  fallbackStrategy: {fileID: 11400000, guid: 2219e608fbf15e14b950383784b10999, type: 2}
+  transitionTimeLimit: 0
+  switchOnAttackFailure: 0
+  openingBuildOrder:
+  - stepType: 0
+    unitType: 4
+    count: 3
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 0
+    unitType: 0
+    count: 2
+    upgradeData: {fileID: 0}
+    weight: 0
+  - stepType: 1
+    unitType: 4
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 98174d0c4d8bbf94a9a3195cedf66226, type: 2}
+    weight: 0
+  midGameComposition:
+  - stepType: 0
+    unitType: 0
+    count: 2
+    upgradeData: {fileID: 0}
+    weight: 10
+  - stepType: 1
+    unitType: 0
+    count: 1
+    upgradeData: {fileID: 11400000, guid: c7f36553a23fac24192f88a4d2c95433, type: 2}
+    weight: 25
+  - stepType: 0
+    unitType: 5
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 7.5
+  - stepType: 1
+    unitType: 5
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 1d7cfa67e99ec4e40982611c5f8e21fb, type: 2}
+    weight: 10
+  - stepType: 0
+    unitType: 4
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 10
+  - stepType: 0
+    unitType: 8
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 2.5
+  expansionBaseWeight: 1
+  expansionSensitivity: 0.6
+  attackWaves:
+  - timing: 240
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 0
+      count: 5
+    - unitType: 5
+      count: 2
+  - timing: 360
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 0
+      count: 8
+    - unitType: 5
+      count: 3
+    - unitType: 10
+      count: 2
+  idealWorkerCount: 6
+  expansionPolicy: 1

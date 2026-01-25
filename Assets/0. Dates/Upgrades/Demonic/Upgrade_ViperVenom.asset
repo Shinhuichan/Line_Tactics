@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4de408364d756884e85cdde583942b26, type: 3}
+  m_Name: Upgrade_ViperVenom
+  m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
+  id: UP_ViperVenom
+  upgradeName: "\uB3C5\uC0AC\uC758 \uB9F9\uB3C5"
+  icon: {fileID: 0}
+  description: "\uBA54\uB450\uC0AC\uC758 \uB3C5\uC0AC\uB85C \uC801\uC744 \uBB3C\uC5B4\uBC84\uB9BD\uB2C8\uB2E4.\n\uD53C\uACA9\uB41C
+    \uC801\uC744 \uC911\uB3C5 \uBC0F \uD68C\uBCF5 \uBD88\uAC00 \uC0C1\uD0DC\uB85C
+    \uB9CC\uB4ED\uB2C8\uB2E4."
+  ironCost: 25
+  oilCost: 60
+  researchTime: 0
+  preRequisites: []
+  targetType: 3
+  specificUnit: 106
+  effectType: 1
+  statType: 0
+  value: 0
+  specialAbilityKey: VIPER_VENOM
+  isCommonUpgrade: 0
+  raceRequirement: 1

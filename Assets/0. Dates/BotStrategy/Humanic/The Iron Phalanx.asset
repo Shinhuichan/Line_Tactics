@@ -1,0 +1,125 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78474d27b4cd9464e802207e80728818, type: 3}
+  m_Name: The Iron Phalanx
+  m_EditorClassIdentifier: Assembly-CSharp::BotStrategyData
+  strategyRace: 0
+  strategyDescription: "\"\uB6AB\uC744 \uC218 \uC788\uB2E4\uBA74 \uB6AB\uC5B4\uBCF4\uC544\uB77C.\"
+    Humanic\uC758 \uAC00\uC7A5 \uB2E8\uB2E8\uD55C \uC720\uB2DB\uB4E4\uC744 \uC870\uD569\uD558\uC5EC,
+    \uC8FD\uC9C0 \uC54A\uB294 \uC880\uBE44 \uAD70\uB2E8\uC744 \uD615\uC131\uD574
+    \uCC9C\uCC9C\uD788 \uC870\uC5EC\uAC00\uB294 \uC804\uB7B5\uC785\uB2C8\uB2E4.\r\n\r\n\uD575\uC2EC
+    \uCEE8\uC149: \uADF9\uB3C4\uB85C \uB192\uC740 \uBC29\uC5B4\uB825 + \uBCF4\uD638\uB9C9
+    + \uD790\uB9C1 (\uC6B0\uC8FC\uBC29\uC5B4)\r\n\r\n\uC8FC\uB825 \uC870\uD569:\r\n\r\nShielder
+    (\uBC29\uD328\uBCD1): IRON_WALL (\uCCA0\uBCBD \uD0DC\uC138)\uB97C \uCF1C\uC11C
+    \uC774\uB3D9\uC18D\uB3C4\uB294 \uB290\uB824\uC9C0\uC9C0\uB9CC \uB370\uBBF8\uC9C0\uB97C
+    \uB300\uD3ED \uAC10\uC18C\uC2DC\uD0B5\uB2C8\uB2E4.\r\n\r\nFlagBearer (\uAE30\uC218\uBCD1):
+    PROTECTION (\uAC00\uD638)\uB85C \uC274\uB354\uB4E4\uC5D0\uAC8C \uBCF4\uD638\uB9C9\uC744
+    \uC50C\uC6CC \uD0F1\uD0B9\uB825\uC744 \uADF9\uB300\uD654\uD569\uB2C8\uB2E4.\r\n\r\nBaseArcher
+    (\uC131\uCC44 \uC7A5\uAD81\uBCD1): \uCD08\uBC18\uC5D0\uB294 \uC131\uCC44 \uC7A5\uAD81\uBCD1\uC73C\uB85C
+    \uAE30\uC9C0\uB97C \uBC29\uC5B4\uD558\uBA70 \uBCD1\uB825\uC744 \uBAA8\uC73C\uB294
+    \uC2DC\uAC04\uC744 \uBD05\uB2C8\uB2E4.\r\n\r\n\uC6B4\uC601 \uBC29\uC2DD:\r\n\r\n\uCD08\uBC18
+    \uACF5\uACA9\uC744 \uBC30\uC81C\uD558\uACE0 BaseArcher\uB85C \uC218\uBE44\uD558\uBA70
+    \uC790\uC6D0(Iron/Oil)\uC744 \uCD95\uC801.\r\n\r\n\uC778\uAD6C\uC218 200(\uAC00\uCE6D)\uC744
+    \uAF49 \uCC44\uC6B4 \uB4A4, IRON_WALL \uC0C1\uD0DC\uB85C \uCC9C\uCC9C\uD788 \uC804\uC9C4\uD558\uC5EC
+    \uB9F5\uC744 \uC7A5\uC545\uD569\uB2C8\uB2E4."
+  fallbackStrategy: {fileID: 0}
+  transitionTimeLimit: 0
+  switchOnAttackFailure: 1
+  openingBuildOrder:
+  - stepType: 0
+    unitType: 4
+    count: 3
+    upgradeData: {fileID: 0}
+    weight: 1
+  - stepType: 0
+    unitType: 8
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 1
+  - stepType: 1
+    unitType: 4
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 98174d0c4d8bbf94a9a3195cedf66226, type: 2}
+    weight: 0
+  midGameComposition:
+  - stepType: 0
+    unitType: 4
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 20
+  - stepType: 0
+    unitType: 2
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 10
+  - stepType: 0
+    unitType: 5
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 5
+  - stepType: 2
+    unitType: 4
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 5
+  - stepType: 0
+    unitType: 10
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 5
+  - stepType: 1
+    unitType: 2
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 328aa6987d8e4f541a46c6800850d312, type: 2}
+    weight: 10
+  - stepType: 1
+    unitType: 5
+    count: 1
+    upgradeData: {fileID: 11400000, guid: 1d7cfa67e99ec4e40982611c5f8e21fb, type: 2}
+    weight: 2.5
+  - stepType: 0
+    unitType: 1
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 3.33
+  - stepType: 1
+    unitType: 10
+    count: 1
+    upgradeData: {fileID: 11400000, guid: b82d7ba3646741a4faaeff706e7c09fd, type: 2}
+    weight: 5
+  expansionBaseWeight: 2.5
+  expansionSensitivity: 1.5
+  attackWaves:
+  - timing: 360
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 2
+      count: 7
+    - unitType: 5
+      count: 3
+    - unitType: 10
+      count: 2
+    - unitType: 1
+      count: 2
+  - timing: 480
+    requiredPowerRatio: 0
+    requiredUnits:
+    - unitType: 2
+      count: 12
+    - unitType: 5
+      count: 4
+    - unitType: 10
+      count: 3
+    - unitType: 1
+      count: 4
+  idealWorkerCount: 12
+  expansionPolicy: 1
