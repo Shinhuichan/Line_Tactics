@@ -31,6 +31,10 @@ public class PlayerBot : MonoBehaviour
     // ⚖️ 런타임 가중치 관리 리스트
     private List<BuildStep> runtimeMidGameBuildList = new List<BuildStep>();
 
+    // 👷 [신규] 일꾼 관리 타이머
+    private float workerManageTimer = 0f;
+    private const float WORKER_MANAGE_INTERVAL = 1.0f; 
+
     [HideInInspector] public int currentWaveIndex = 0;
     [HideInInspector] public float gameTime = 0f;
 
@@ -118,6 +122,57 @@ public class PlayerBot : MonoBehaviour
         CheckAttackWaves();
         FillProductionQueue();
         MonitorStrategyStatus();
+
+        // 👷 [신규] 일꾼 자동 관리 (Bot 명령)
+        ManageIdleWorkers();
+    }
+
+    // 👷 [신규] 일꾼 스마트 관리 로직 (EnemyBot과 동일)
+    void ManageIdleWorkers()
+    {
+        workerManageTimer += Time.deltaTime;
+        if (workerManageTimer < WORKER_MANAGE_INTERVAL) return;
+        workerManageTimer = 0f;
+
+        foreach (var unit in UnitController.activeUnits)
+        {
+            if (unit == null || unit.isDead || !unit.CompareTag(myTeamTag)) continue;
+            
+            if (unit.unitType != UnitType.Worker && unit.unitType != UnitType.Slave) continue;
+
+            WorkerAbility worker = unit.GetComponent<WorkerAbility>();
+            if (worker == null) continue;
+
+            if (worker.currentState == WorkerState.Idle)
+            {
+                bool needsMigration = false;
+                
+                if (worker.assignedBase == null)
+                {
+                    needsMigration = true;
+                }
+                else
+                {
+                    ResourceNode nearbyNode = worker.assignedBase.GetNearestResourceNode(worker.targetResourceType);
+                    if (nearbyNode == null || nearbyNode.currentAmount <= 0)
+                    {
+                        needsMigration = true;
+                    }
+                }
+
+                if (needsMigration)
+                {
+                    BaseController newBase = BaseController.FindNearestBaseWithResource(worker.targetResourceType, myTeamTag, worker.transform.position);
+
+                    if (newBase != null && newBase != worker.assignedBase)
+                    {
+                        Debug.Log($"🤖 [PlayerBot] Idle Worker ({unit.name}) detected! Relocating to {newBase.name}.");
+                        worker.TransferBase(newBase);
+                        worker.SetStateToMine(worker.targetResourceType);
+                    }
+                }
+            }
+        }
     }
 
     void MonitorStrategyStatus()
@@ -315,7 +370,7 @@ public class PlayerBot : MonoBehaviour
                     BuildStep step = runtimeMidGameBuildList[i];
                     if (step.stepType == BuildStepType.Unit && missingTypes.Contains(step.unitType))
                     {
-                        step.weight *= 1.125f; 
+                        step.weight *= 1.25f; 
                         runtimeMidGameBuildList[i] = step;
                     }
                 }

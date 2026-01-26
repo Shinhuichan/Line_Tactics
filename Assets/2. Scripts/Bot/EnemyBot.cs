@@ -37,6 +37,10 @@ public class EnemyBot : MonoBehaviour
     // ⚖️ 런타임 가중치 관리 리스트
     private List<BuildStep> runtimeMidGameBuildList = new List<BuildStep>();
 
+    // 👷 [신규] 일꾼 관리 타이머
+    private float workerManageTimer = 0f;
+    private const float WORKER_MANAGE_INTERVAL = 1.0f; // 1초마다 체크
+
     [HideInInspector] public int currentWaveIndex = 0;
     [HideInInspector] public float gameTime = 0f;
 
@@ -99,7 +103,6 @@ public class EnemyBot : MonoBehaviour
             }
         }
 
-        // ⚖️ [신규] 전략 선택 후 런타임 리스트 초기화
         InitializeRuntimeBuildList();
     }
 
@@ -110,8 +113,6 @@ public class EnemyBot : MonoBehaviour
         {
             foreach (var step in activeStrategy.midGameComposition)
             {
-                // 사용자가 Inspector에서 실수로 Expansion을 넣었더라도, 코드로 동적 처리하므로 여기서 제외할 수도 있음.
-                // 하지만 사용자가 "리스트에서 뺄 것"이라고 했으므로 그대로 둠.
                 runtimeMidGameBuildList.Add(step);
             }
         }
@@ -130,6 +131,65 @@ public class EnemyBot : MonoBehaviour
         CheckAttackWaves();
         FillProductionQueue();
         MonitorStrategyStatus();
+        
+        // 👷 [신규] 봇이 직접 일꾼 관리 (멍때리는 애들 재배치)
+        ManageIdleWorkers();
+    }
+
+    // 👷 [신규] 일꾼 스마트 관리 로직
+    void ManageIdleWorkers()
+    {
+        workerManageTimer += Time.deltaTime;
+        if (workerManageTimer < WORKER_MANAGE_INTERVAL) return;
+        workerManageTimer = 0f;
+
+        // 내 팀의 모든 일꾼 검색
+        foreach (var unit in UnitController.activeUnits)
+        {
+            if (unit == null || unit.isDead || !unit.CompareTag(myTeamTag)) continue;
+            
+            // 일꾼 타입인지 확인
+            if (unit.unitType != UnitType.Worker && unit.unitType != UnitType.Slave) continue;
+
+            WorkerAbility worker = unit.GetComponent<WorkerAbility>();
+            if (worker == null) continue;
+
+            // 1. 멍때리고 있는가? (Idle)
+            if (worker.currentState == WorkerState.Idle)
+            {
+                // 2. 현재 소속된 기지가 없거나, 있어도 자원이 없는가?
+                bool needsMigration = false;
+                
+                if (worker.assignedBase == null)
+                {
+                    needsMigration = true;
+                }
+                else
+                {
+                    // 일꾼이 원래 캐려던 자원(targetResourceType)이 현재 기지 주변에 있는지 확인
+                    ResourceNode nearbyNode = worker.assignedBase.GetNearestResourceNode(worker.targetResourceType);
+                    if (nearbyNode == null || nearbyNode.currentAmount <= 0)
+                    {
+                        needsMigration = true;
+                    }
+                }
+
+                // 3. 이주가 필요하다면, 가장 가까운 '자원 있는' 기지로 명령
+                if (needsMigration)
+                {
+                    // 원래 캐려던 자원을 가진 가장 가까운 기지 찾기
+                    BaseController newBase = BaseController.FindNearestBaseWithResource(worker.targetResourceType, myTeamTag, worker.transform.position);
+
+                    if (newBase != null && newBase != worker.assignedBase)
+                    {
+                        // 🌟 Bot이 명령: 소속 변경 및 즉시 채굴
+                        Debug.Log($"🤖 [EnemyBot] Idle Worker ({unit.name}) detected! Relocating to {newBase.name} for {worker.targetResourceType}.");
+                        worker.TransferBase(newBase);
+                        worker.SetStateToMine(worker.targetResourceType);
+                    }
+                }
+            }
+        }
     }
 
     void MonitorStrategyStatus()
@@ -187,12 +247,11 @@ public class EnemyBot : MonoBehaviour
             if (tactics.TryTriggerWave(nextWave))
             {
                 currentWaveIndex++;
-                InitializeRuntimeBuildList(); // 웨이브 발동 시 가중치 초기화
+                InitializeRuntimeBuildList(); 
             }
         }
     }
 
-    // 🌟 [핵심] 생산 큐 채우기 로직 (스마트 확장 & 배수진 포함)
     void FillProductionQueue()
     {
         if (activeStrategy == null) return;
@@ -229,22 +288,18 @@ public class EnemyBot : MonoBehaviour
             if (production.GetQueueCount() < 2 && runtimeMidGameBuildList.Count > 0)
             {
                 // ⛺ [스마트 확장 체크]
-                // 1. 경제 상황 분석
                 int remainingIron = GetTotalRemainingIron();
                 int currentIron = EnemyResourceManager.I != null ? EnemyResourceManager.I.currentIron : 0;
                 
                 UnitData outpostData = ConstructionManager.I.GetOutpostData(GameManager.I.enemyRace);
                 int outpostCost = outpostData != null ? outpostData.ironCost : 300;
 
-                // 배수진 판정: 보유 자원 + 남은 자원 <= Outpost 가격
                 bool isCriticalEconomicSituation = (currentIron + remainingIron) <= outpostCost;
 
                 if (isCriticalEconomicSituation)
                 {
-                    // 🔥 [배수진] 가망이 없음 -> 확장 아니면 올인
                     if (ConstructionManager.I.HasFreeSpot())
                     {
-                        // 부지가 있다 -> 당장 확장해라! (큐 비우고 확장 최우선)
                         Debug.Log("🤖 [EnemyBot] Critical Economy! Forcing Expansion (Last Stand).");
                         production.ClearQueue();
                         BuildStep expansionStep = new BuildStep { stepType = BuildStepType.Expansion, weight = 1000f };
@@ -252,28 +307,17 @@ public class EnemyBot : MonoBehaviour
                     }
                     else
                     {
-                        // 부지가 없다 -> 공격만이 살 길이다! (올인 러쉬)
                         Debug.Log("🤖 [EnemyBot] No Land Left! All-In Attack Triggered!");
-                        // 강제 공격 태세 전환
                         tactics.LaunchAllOutAttack(); 
                     }
-                    return; // 배수진 상황에서는 일반 생산 로직 스킵
+                    return; 
                 }
 
-                // ⚖️ [동적 경쟁] 확장을 포함한 후보 리스트 생성
                 List<BuildStep> candidates = new List<BuildStep>(runtimeMidGameBuildList);
-
-                // 확장 가중치 계산
                 float expansionWeight = CalculateExpansionWeight(currentIron, remainingIron, outpostCost);
-                
-                // 확장 스텝 생성 및 추가
-                BuildStep dynamicExpansion = new BuildStep { stepType = BuildStepType.Expansion, weight = expansionWeight };
-                candidates.Add(dynamicExpansion);
+                candidates.Add(new BuildStep { stepType = BuildStepType.Expansion, weight = expansionWeight });
 
-                // 가중치 추첨
                 BuildStep pickedStep = GetWeightedRandomStep(candidates);
-
-                // 선택된 유닛이 다음 웨이브 필수 유닛인지 확인하고 가중치 보정 (Pity System)
                 UpdateWeightsForNextWave(pickedStep);
 
                 if (pickedStep.stepType == BuildStepType.Unit)
@@ -284,7 +328,6 @@ public class EnemyBot : MonoBehaviour
         }
     }
 
-    // 💰 남은 철재 총량 계산
     int GetTotalRemainingIron()
     {
         int total = 0;
@@ -298,29 +341,17 @@ public class EnemyBot : MonoBehaviour
         return total;
     }
 
-    // 📈 확장 가중치 동적 계산
     float CalculateExpansionWeight(int currentIron, int remainingIron, int outpostCost)
     {
-        // 기본값
         float weight = activeStrategy.expansionBaseWeight;
-        
-        // 자원이 줄어들수록 가중치 증가
-        // 공식: 민감도 * (최대치 - 현재 잔여량)
-        // 여기서 최대치 기준은 대략적으로 Outpost 가격의 5배(1500) 정도로 가정하거나, 
-        // 단순히 (OutpostCost - (Current + Remaining))으로 갈 수도 있음.
-        // 기획 의도: "잔여 자원이 소모될 수록 가중치 증가"
-        
-        // 안전한 기준점: Outpost 3개 분량(900)보다 적으면 위기감 조성
         float scarcity = Mathf.Max(0, (outpostCost * 3) - (currentIron + remainingIron)); 
-        
         weight += scarcity * activeStrategy.expansionSensitivity;
-
-        return Mathf.Max(1f, weight); // 최소 1 보장
+        return Mathf.Max(1f, weight); 
     }
 
     void UpdateWeightsForNextWave(BuildStep pickedStep)
     {
-        if (pickedStep.stepType == BuildStepType.Expansion) return; // 확장은 웨이브 필수 요소가 아님
+        if (pickedStep.stepType == BuildStepType.Expansion) return; 
 
         if (currentWaveIndex >= activeStrategy.attackWaves.Count) return;
         AttackWave nextWave = activeStrategy.attackWaves[currentWaveIndex];
@@ -356,7 +387,7 @@ public class EnemyBot : MonoBehaviour
                     BuildStep step = runtimeMidGameBuildList[i];
                     if (step.stepType == BuildStepType.Unit && missingTypes.Contains(step.unitType))
                     {
-                        step.weight *= 1.125f; 
+                        step.weight *= 1.25f; 
                         runtimeMidGameBuildList[i] = step;
                     }
                 }

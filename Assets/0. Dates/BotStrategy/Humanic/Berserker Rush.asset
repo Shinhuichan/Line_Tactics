@@ -74,7 +74,7 @@ MonoBehaviour:
     unitType: 4
     count: 1
     upgradeData: {fileID: 0}
-    weight: 10
+    weight: 15
   - stepType: 0
     unitType: 8
     count: 1
