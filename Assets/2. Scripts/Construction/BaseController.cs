@@ -12,9 +12,6 @@ public enum BaseTask
 
 public class BaseController : MonoBehaviour
 {
-    // 📢 [신규] 건설 완료 이벤트를 전역으로 알림 (Bot이 듣기 위함)
-    public static event System.Action<BaseController> OnConstructionFinished;
-    
     // 📋 맵에 존재하는 모든 기지를 관리하는 정적 리스트
     public static List<BaseController> activeBases = new List<BaseController>();
 
@@ -352,9 +349,6 @@ public class BaseController : MonoBehaviour
 
         if (FloatingTextManager.I != null)
             FloatingTextManager.I.ShowText(transform.position, "건설 완료!", Color.cyan, 30);
-
-        // 📢 [신규] 건설 완료 이벤트 발생! -> 봇들이 이 소리를 듣고 즉시 반응함
-        OnConstructionFinished?.Invoke(this);
     }
 
     public void Repair(float amount)

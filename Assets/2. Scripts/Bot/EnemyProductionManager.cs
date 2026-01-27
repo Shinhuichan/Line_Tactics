@@ -75,7 +75,7 @@ public class EnemyProductionManager : MonoBehaviour
         }
     }
 
-    // 🌟 [핵심 수정] 생산 우선순위 및 업그레이드 예외 처리 강화
+    // 🌟 [핵심 수정] 생산 우선순위 및 자원 보존 로직 개선
     private void ProcessProductionQueue()
     {
         spawnTimer += Time.deltaTime;
@@ -99,9 +99,22 @@ public class EnemyProductionManager : MonoBehaviour
             // A. 유닛 생산
             if (nextStep.stepType == BuildStepType.Unit)
             {
-                if (CanAffordUnit((int)nextStep.unitType))
+                // 방어 유닛(성채 장궁병/시체병) 처리
+                if (nextStep.unitType == UnitType.BaseArcher || nextStep.unitType == UnitType.BaseCorpse)
                 {
-                    if (TryPurchaseUnit((int)nextStep.unitType)) isSuccess = true;
+                    // SpawnManager에서 방어 유닛 전용 로직(비용 증가 등)이 있다면 TrySpawnBaseArcher 등을 호출해야 할 수도 있음
+                    // 여기서는 일반 유닛처럼 처리하되, CanAffordUnit이 비용을 체크함
+                    if (CanAffordUnit((int)nextStep.unitType))
+                    {
+                        if (TryPurchaseUnit((int)nextStep.unitType)) isSuccess = true;
+                    }
+                }
+                else
+                {
+                    if (CanAffordUnit((int)nextStep.unitType))
+                    {
+                        if (TryPurchaseUnit((int)nextStep.unitType)) isSuccess = true;
+                    }
                 }
             }
             // B. 업그레이드
@@ -109,7 +122,6 @@ public class EnemyProductionManager : MonoBehaviour
             {
                 if (nextStep.upgradeData != null)
                 {
-                    // 1. 이미 완료했거나 연구 중이면 큐에서 제거
                     if (UpgradeManager.I.IsUnlocked(nextStep.upgradeData, teamTag) ||
                         UpgradeManager.I.IsResearching(nextStep.upgradeData, teamTag))
                     {
@@ -117,27 +129,17 @@ public class EnemyProductionManager : MonoBehaviour
                         return;
                     }
 
-                    // 🛑 [신규] 선행 연구 조건 확인 (Prerequisites Check)
-                    // 기획: 선행 업그레이드가 안 되어 있으면 대기열에서 Pass(제거)
-                    // IsResearchable은 선행 연구가 완료되지 않았으면 false를 반환함
-                    if (!UpgradeManager.I.IsResearchable(nextStep.upgradeData, teamTag))
-                    {
-                        Debug.Log($"🤖 [{teamTag}] 선행 연구 미달로 {nextStep.upgradeData.upgradeName} 스킵 (Pass)");
-                        buildQueue.Dequeue();
-                        return;
-                    }
-
-                    // 2. 자원 확인 및 구매 시도
                     if (EnemyResourceManager.I.CheckCost(nextStep.upgradeData.ironCost, nextStep.upgradeData.oilCost))
                     {
-                        // 위에서 IsResearchable 체크를 통과했으므로 여기서는 자원만 있으면 구매 가능
-                        UpgradeManager.I.PurchaseUpgrade(nextStep.upgradeData, teamTag);
-                        isSuccess = true;
+                        if (UpgradeManager.I.IsResearchable(nextStep.upgradeData, teamTag))
+                        {
+                            UpgradeManager.I.PurchaseUpgrade(nextStep.upgradeData, teamTag);
+                            isSuccess = true;
+                        }
                     }
                 }
                 else
                 {
-                    // 데이터가 비어있으면 삭제
                     buildQueue.Dequeue();
                     return;
                 }
@@ -157,15 +159,7 @@ public class EnemyProductionManager : MonoBehaviour
                     if (EnemyResourceManager.I.CheckCost(enemyOutpostData.ironCost, enemyOutpostData.oilCost))
                     {
                         bool built = ConstructionManager.I.TryBuildEnemyOutpost(brain.Strategy.expansionPolicy);
-                        if (built) 
-                        {
-                            isSuccess = true;
-                            // 🌟 [핵심] 건설 명령 내리자마자 바로 전선 갱신 -> 병력 이동 시작!
-                            if (brain.tactics != null)
-                            {
-                                brain.tactics.ForceUpdateFrontline();
-                            }
-                        }
+                        if (built) isSuccess = true;
                         else { buildQueue.Dequeue(); return; } // 자리 없으면 스킵
                     }
                 }
@@ -181,14 +175,19 @@ public class EnemyProductionManager : MonoBehaviour
         }
 
         // 2. 일꾼 자동 생산 (큐 처리 실패 혹은 큐가 비었을 때 수행)
+        // 🌟 조건: [오프닝 종료] AND [일꾼 부족] AND [큐 아이템 비용을 제외하고도 자원이 남을 때]
         if (brain.IsOpeningFinished && NeedMoreWorkers())
         {
+            // 현재 일꾼 수가 너무 적으면(예: 3마리 미만) 큐 무시하고 긴급 생산 (옵션)
+            // 여기서는 자원 보존 법칙을 따름
+            
             UnitData workerData = SpawnManager.I.GetUnitDataByType((UnitType)myWorkerId);
             if (workerData != null)
             {
                 int workerIron = workerData.ironCost;
                 int workerOil = workerData.oilCost;
 
+                // 🌟 [핵심] 현재 자원이 (일꾼 비용 + 큐 예약 비용)보다 많은가?
                 bool hasSafeResources = false;
                 if (EnemyResourceManager.I != null)
                 {
@@ -197,17 +196,20 @@ public class EnemyProductionManager : MonoBehaviour
                     hasSafeResources = safeIron && safeOil;
                 }
 
-                if (hasSafeResources && buildQueue.Count < 3) 
+                // 큐가 비어있다면 예약 비용은 0이므로 자연스럽게 통과
+                if (hasSafeResources && buildQueue.Count < 3) // 생산 대기열 꽉 참 방지
                 {
                     if (TryPurchaseUnit(myWorkerId))
                     {
                         spawnTimer = 0f;
+                        // Debug.Log("[Production] 일꾼 추가 생산 (여유 자원 활용)");
                     }
                 }
             }
         }
     }
 
+    // 🧮 예약 비용 계산 헬퍼 함수
     void CalculateStepCost(BuildStep step, out int iron, out int oil)
     {
         iron = 0;
@@ -298,7 +300,7 @@ public class EnemyProductionManager : MonoBehaviour
         int ironCost = 0;
         int oilCost = 0;
 
-        CalculateStepCost(next, out ironCost, out oilCost); 
+        CalculateStepCost(next, out ironCost, out oilCost); // 코드 재사용
 
         if (EnemyResourceManager.I != null)
         {

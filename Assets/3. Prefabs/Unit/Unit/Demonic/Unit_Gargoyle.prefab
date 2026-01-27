@@ -381,12 +381,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb2419962b4c21948905faba28ee5e01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GargoyleAbility
-  owner: {fileID: 0}
   damageAmpRatio: 0.1
   maxStacks: 15
   shatterUpgradeKey: CRYSTAL_SHATTER
-  shatterRange: 0.25
-  shatterDmgCoef: 0.1
+  shatterRange: 0.5
+  shatterDmgCoef: 0.15
   shatterEffect: {fileID: 0}
   currentTarget: {fileID: 0}
   targetUnit: {fileID: 0}

@@ -50,14 +50,7 @@ public class TrumpeterAbility : UnitAbility
                 UnitController ally = col.GetComponent<UnitController>();
                 if (ally == null || ally.isDead) continue;
 
-                // ⛔ [수정] 노예병(Slave) 및 성채 시체병(BaseCorpse)은 버프 대상에서 아예 제외
-                // (우선순위 계산조차 하지 않고 무시합니다)
-                if (ally.unitType == UnitType.Slave || ally.unitType == UnitType.BaseCorpse) 
-                {
-                    continue; 
-                }
-
-                // 2. 건물 제외 (기존 로직 유지 - BaseArcher 등도 여기서 걸러짐)
+                // 2. 건물 제외 (기획에 따라 포함 가능하나 보통 유닛에게 줌)
                 if (ally.IsStaticUnit) continue; 
 
                 // 3. 점수 계산 (우선순위)

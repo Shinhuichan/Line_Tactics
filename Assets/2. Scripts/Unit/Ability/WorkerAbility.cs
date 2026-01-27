@@ -42,13 +42,19 @@ public class WorkerAbility : UnitAbility
 
     public BaseController targetConstructionSite;
 
-    // 🔧 [신규] 자원 반납 후 수리하러 갈 타겟 저장용
-    private BaseController pendingRepairTarget = null;
-
     // 수리 관련
+    private BaseController targetRepairBase;
     private float repairTimer = 0f;
-    
-    // AI 설정
+    private const float REPAIR_DURATION = 0.5f; 
+    private const float REPAIR_AMOUNT = 50f;
+
+    // 상태 복구용
+    private WorkerState savedStateBeforeSiege;      
+    private ResourceType savedResourceBeforeSiege;  
+    private bool wasSiegeMode = false;
+    private WorkerState lastState = WorkerState.Idle;
+
+    // 🤖 [신규] 스마트 기능 활성화 여부 (PlayerBot 등에서 강제로 켜고 싶을 때 사용)
     [Header("AI 설정")]
     public bool isBotMode = false;
 
@@ -57,6 +63,7 @@ public class WorkerAbility : UnitAbility
         base.Initialize(unit);
         currentMaxCapacity = 10; 
 
+        // 태그가 Enemy면 자동으로 봇 모드 활성화 (스마트 이주 기능 사용)
         if (owner.CompareTag("Enemy"))
         {
             isBotMode = true;
@@ -71,6 +78,7 @@ public class WorkerAbility : UnitAbility
         BaseController bestBase = null;
         float minDst = Mathf.Infinity;
 
+        // 1. 가장 가까운 아군 기지 찾기 (태어난 곳)
         foreach(var b in bases)
         {
             if (!b.CompareTag(owner.tag)) continue;
@@ -84,14 +92,24 @@ public class WorkerAbility : UnitAbility
             }
         }
 
+        // 2. 기지에 소속되고 명령 하달 받기
         if (bestBase != null)
         {
             JoinBase(bestBase);
+
+            // 🌟 기지의 현재 태세에 따라 즉시 행동 개시
             switch (bestBase.currentTask)
             {
-                case BaseTask.Iron: SetStateToMine(ResourceType.Iron); break;
-                case BaseTask.Oil: SetStateToMine(ResourceType.Oil); break;
-                default: SetStateToIdle(); break;
+                case BaseTask.Iron:
+                    SetStateToMine(ResourceType.Iron);
+                    break;
+                case BaseTask.Oil:
+                    SetStateToMine(ResourceType.Oil);
+                    break;
+                case BaseTask.Idle:
+                default:
+                    SetStateToIdle();
+                    break;
             }
         }
         else
@@ -199,35 +217,21 @@ public class WorkerAbility : UnitAbility
         }
     }
 
-    // 🔧 [수정] 수리 명령 (Q2: 자원 있으면 반납 후 수리)
     public void SetStateToRepair(BaseController baseTarget)
     {
         if (baseTarget == null) return;
 
-        owner.isManualMove = true; 
-
-        // 1. 자원을 들고 있다면? -> 반납하러 간다 (B안)
-        if (currentLoad > 0)
-        {
-            pendingRepairTarget = baseTarget; // 반납 후 갈 곳 예약
-            currentState = WorkerState.ReturningToBase;
-            return;
-        }
-
-        // 2. 빈손이라면 -> 바로 수리하러 간다
         targetConstructionSite = baseTarget; 
         currentState = WorkerState.Repairing;
-        pendingRepairTarget = null;
+        owner.isManualMove = true; 
     }
 
     void ProcessRepairing()
     {
-        // 타겟이 없거나, 이미 풀피가 되었다면? -> 작업 종료 및 복귀
         if (targetConstructionSite == null || targetConstructionSite.currentHP >= targetConstructionSite.maxHP)
         {
             targetConstructionSite = null;
             
-            // 🔄 [Q3: B안] 수리 종료 후, 현재 소속된 기지의 태세(Task)에 따라 복귀
             if (assignedBase != null)
             {
                 BaseTask task = assignedBase.currentTask;
@@ -237,8 +241,7 @@ public class WorkerAbility : UnitAbility
             }
             else
             {
-                // 소속 기지가 없다면 그냥 가장 가까운 기지 찾아서 합류 시도
-                FindAndJoinNearestBase();
+                SetStateToIdle();
             }
             return;
         }
@@ -251,8 +254,7 @@ public class WorkerAbility : UnitAbility
         }
         else
         {
-            // 수리 진행 (건설과 동일한 로직 사용 가능하지만 Repair 호출)
-            float repairAmount = 100f * Time.deltaTime; // 수리 속도 조절 가능
+            float repairAmount = 100f * Time.deltaTime;
             targetConstructionSite.Repair(repairAmount);
         }
     }
@@ -266,6 +268,7 @@ public class WorkerAbility : UnitAbility
 
             if (targetNodeTransform == null)
             {
+                // 🔄 [신규] 이동하려는데 자원이 없으면 여기서도 스마트 이주 체크 가능
                 CheckSmartMigrationOrIdle(); 
                 return;
             }
@@ -393,6 +396,7 @@ public class WorkerAbility : UnitAbility
 
     void ProcessMining()
     {
+        // 자원이 고갈되거나 사라진 경우
         if (targetNodeScript == null || targetNodeScript.currentAmount <= 0) 
         {
             if (currentLoad > 0) 
@@ -401,6 +405,7 @@ public class WorkerAbility : UnitAbility
             }
             else 
             {
+                // 🔄 [신규] 자원 고갈 시 스마트 이주 로직 호출
                 AttemptFindNewResourceOrMigrate();
             }
             return;
@@ -430,45 +435,59 @@ public class WorkerAbility : UnitAbility
             }
             else
             {
+                // 캤는데 0이 나오면 고갈된 것
                 if (currentLoad > 0) 
                 {
                     currentState = WorkerState.ReturningToBase;
                 }
                 else 
                 {
+                    // 🔄 [신규] 자원 고갈 시 스마트 이주 로직 호출
                     AttemptFindNewResourceOrMigrate();
                 }
             }
         }
     }
 
+    // 🔄 [신규] 자원 고갈 시: 주변 탐색 -> 실패 시 스마트 이주(Bot 전용) -> 실패 시 Idle
     void AttemptFindNewResourceOrMigrate()
     {
+        // 1. 현재 기지 주변에 같은 자원이 더 있는지 확인
         if (assignedBase != null)
         {
             FindResourceNearBase(assignedBase);
             if (targetNodeTransform != null)
             {
+                // 주변에 자원이 있으면 계속 캔다
                 currentState = WorkerState.MovingToResource;
                 return;
             }
         }
+
+        // 2. 주변에 없다면 스마트 이주 시도 (Bot Only)
         CheckSmartMigrationOrIdle();
     }
 
+    // 🔄 [신규] 스마트 이주 핵심 로직
     void CheckSmartMigrationOrIdle()
     {
+        // 봇 모드(EnemyTag 등)일 때만 작동. 플레이어의 수동 조작 유닛은 건드리지 않음.
         if (isBotMode)
         {
+            // 원하는 자원을 가진 다른 아군 기지를 검색
             BaseController newHome = BaseController.FindBaseWithResource(targetResourceType, owner.tag);
 
             if (newHome != null && newHome != assignedBase)
             {
+                // 🌟 Q3: 소속을 바꾸면 자동으로 캐러 가도록 설정
+                Debug.Log($"🤖 [SmartBot] Worker {name} migrated from {(assignedBase?assignedBase.name:"null")} to {newHome.name} for {targetResourceType}");
                 TransferBase(newHome);
                 SetStateToMine(targetResourceType);
                 return;
             }
         }
+
+        // 갈 곳도 없으면 Idle
         SetStateToIdle();
     }
 
@@ -480,7 +499,6 @@ public class WorkerAbility : UnitAbility
         }
     }
 
-    // 💰 [수정] 자원 반납 로직 (수리 예약 확인)
     void DepositResource()
     {
         if (owner.CompareTag("Player"))
@@ -501,14 +519,6 @@ public class WorkerAbility : UnitAbility
         
         currentLoad = 0; 
 
-        // 🔧 [신규] 수리를 위해 반납하러 온 경우라면? -> 바로 수리하러 이동!
-        if (pendingRepairTarget != null)
-        {
-            SetStateToRepair(pendingRepairTarget);
-            return;
-        }
-
-        // 기존 로직 (자원 전환 or 계속 채집)
         if (pendingResourceType.HasValue)
         {
             ResourceType next = pendingResourceType.Value;
@@ -575,6 +585,7 @@ public class WorkerAbility : UnitAbility
         }
         else
         {
+            // 자원이 없으면 바로 멍때리지 말고 스마트 이주 체크
             AttemptFindNewResourceOrMigrate();
         }
     }
@@ -586,7 +597,6 @@ public class WorkerAbility : UnitAbility
         owner.isManualMove = false; 
         currentState = WorkerState.Attack;
         pendingResourceType = null; 
-        pendingRepairTarget = null; // 예약 취소
     }
 
     public void SetStateToBuild(BaseController site)
@@ -594,11 +604,10 @@ public class WorkerAbility : UnitAbility
         targetConstructionSite = site;
         currentState = WorkerState.Building;
         owner.isManualMove = true; 
-        pendingRepairTarget = null; // 예약 취소
     }
 
-    // 🏗️ [수정] 건설 로직: 건설 완료 후 행동 분기 처리
-    private void ProcessBuilding()
+    // 🏗️ [수정] 건설 완료 시, 해당 기지로 소속을 옮기고 기지의 태세에 따라 채집 시작
+    void ProcessBuilding()
     {
         if (targetConstructionSite == null)
         {
@@ -606,34 +615,29 @@ public class WorkerAbility : UnitAbility
             return;
         }
 
-        // 건설이 완료되었는가?
         if (targetConstructionSite.isConstructed)
         {
-            // 1. 소속 변경 (내 기지가 됨)
+            // 1. 소속 변경 (건설한 그 집이 이제 내 집이다)
             TransferBase(targetConstructionSite);
-            BaseController constructedBase = targetConstructionSite; 
+            BaseController constructedBase = targetConstructionSite; // 참조 저장
 
-            // 타겟 초기화 (더 이상 건설할 게 없음)
+            // 2. 건설 타겟 초기화
             targetConstructionSite = null;
 
-            // 🌟 [핵심 수정] 봇일 경우에만 자동으로 Iron 채굴 시작
-            // 플레이어는 "자동 기능이 적용되지 말아야" 하므로 Idle 상태로 둠
-            if (isBotMode)
+            // 🌟 Q2: 이미 지어진 곳으로 배치된다면 기지의 태세(currentTask)를 따른다.
+            // BaseController의 기본 태세는 Iron이므로, 막 지어진 기지는 Iron을 캐러 감.
+            ResourceType nextTask = ResourceType.Iron; 
+
+            if (constructedBase.currentTask == BaseTask.Oil)
             {
-                // 기획: "새로 지어진 Outpost는 Iron 상태여야 하며, 무조건 Iron을 채굴하러 가야 한다"
-                Debug.Log($"🤖 [BotWorker] {constructedBase.name} 건설 완료! 즉시 Iron 채굴 시작.");
-                SetStateToMine(ResourceType.Iron);
+                nextTask = ResourceType.Oil;
             }
-            else
-            {
-                // 플레이어는 수동 조작 대기
-                Debug.Log($"👤 [PlayerWorker] {constructedBase.name} 건설 완료. 명령 대기 중 (Idle).");
-                SetStateToIdle();
-            }
+            // (만약 Idle 상태라면 Iron을 기본으로 하거나 Idle로 가야하지만, 보통 확장은 자원때문이므로 Iron 기본값 유지)
+            
+            SetStateToMine(nextTask); 
             return;
         }
 
-        // --- 기존 건설 진행 로직 유지 ---
         float dist = Vector3.Distance(transform.position, targetConstructionSite.transform.position);
         
         if (dist > interactionRange)
@@ -650,22 +654,25 @@ public class WorkerAbility : UnitAbility
     {
         if (newBase == null) return;
 
+        // 기존 기지 명부에서 제거
         if (assignedBase != null && assignedBase.assignedWorkers.Contains(this))
         {
             assignedBase.assignedWorkers.Remove(this);
         }
 
+        // 새 기지로 등록
         assignedBase = newBase;
         if (!assignedBase.assignedWorkers.Contains(this))
         {
             assignedBase.assignedWorkers.Add(this);
         }
+
+        // Debug.Log($"👷 Worker {name} transferred to {newBase.name}");
     }
 
     public void SetStateToIdle()
     {
         currentState = WorkerState.Idle;
         owner.isManualMove = false;
-        pendingRepairTarget = null;
     }
 }

@@ -21,55 +21,6 @@ public class PlayerProductionManager : MonoBehaviour
         IdentifyMyWorkerType();
     }
 
-    // 🌟 [신규] 이벤트 구독 및 해제
-    private void OnEnable()
-    {
-        BaseController.OnConstructionFinished += OnBaseBuiltHandler;
-    }
-
-    private void OnDisable()
-    {
-        BaseController.OnConstructionFinished -= OnBaseBuiltHandler;
-    }
-
-    // 🛑 [문제 해결 2] 건설 완료 시 호출됨 -> 플레이어 일꾼을 찾아 강제 채굴 명령
-    private void OnBaseBuiltHandler(BaseController builtBase)
-    {
-        // 1. 내 기지가 아니면 무시
-        if (!builtBase.CompareTag(brain.myTeamTag)) return;
-
-        // 2. 방금 이 기지를 지은(혹은 아주 가까이 있는) 일꾼 찾기
-        WorkerAbility builder = FindWorkerNearBase(builtBase);
-
-        if (builder != null)
-        {
-            // WorkerAbility가 플레이어 유닛이라 'SetStateToIdle'을 했을 수 있으므로,
-            // 여기서 강제로 'SetStateToMine'으로 덮어씌움 (Iron 우선)
-            ResourceType targetRes = ResourceType.Iron;
-            if (builtBase.currentTask == BaseTask.Oil) targetRes = ResourceType.Oil;
-
-            builder.SetStateToMine(targetRes);
-            Debug.Log($"🤖 [PlayerBot] Worker forced to mine {targetRes} at {builtBase.name}");
-        }
-    }
-
-    WorkerAbility FindWorkerNearBase(BaseController baseCtrl)
-    {
-        float searchRadius = 3.0f; // 기지 중심에서 매우 가까운 일꾼
-        Collider2D[] hits = Physics2D.OverlapCircleAll(baseCtrl.transform.position, searchRadius);
-        
-        foreach(var hit in hits)
-        {
-            WorkerAbility w = hit.GetComponent<WorkerAbility>();
-            if (w != null && w.CompareTag(brain.myTeamTag))
-            {
-                // 건설 직후라 상태가 Building이거나 Idle일 가능성 높음
-                return w;
-            }
-        }
-        return null;
-    }
-
     public void ClearQueue()
     {
         buildQueue.Clear();
@@ -102,6 +53,7 @@ public class PlayerProductionManager : MonoBehaviour
         spawnTimer += Time.deltaTime;
         if (spawnTimer < SPAWN_INTERVAL) return;
 
+        // 1. 자원 예약 계산
         int reservedIron = 0;
         int reservedOil = 0;
         if (buildQueue.Count > 0)
@@ -109,6 +61,7 @@ public class PlayerProductionManager : MonoBehaviour
             CalculateStepCost(buildQueue.Peek(), out reservedIron, out reservedOil);
         }
 
+        // 2. 전략 큐 최우선 처리
         if (buildQueue.Count > 0)
         {
             BuildStep nextStep = buildQueue.Peek();
@@ -133,16 +86,13 @@ public class PlayerProductionManager : MonoBehaviour
                         return;
                     }
 
-                    if (!UpgradeManager.I.IsResearchable(nextStep.upgradeData, teamTag))
-                    {
-                         buildQueue.Dequeue(); // 선행 연구 미달 시 패스
-                         return;
-                    }
-
                     if (ResourceManager.I.CheckCost(nextStep.upgradeData.ironCost, nextStep.upgradeData.oilCost))
                     {
-                        UpgradeManager.I.PurchaseUpgrade(nextStep.upgradeData, teamTag);
-                        isSuccess = true;
+                        if (UpgradeManager.I.IsResearchable(nextStep.upgradeData, teamTag))
+                        {
+                            UpgradeManager.I.PurchaseUpgrade(nextStep.upgradeData, teamTag);
+                            isSuccess = true;
+                        }
                     }
                 }
                 else
@@ -165,15 +115,7 @@ public class PlayerProductionManager : MonoBehaviour
                     if (ResourceManager.I.CheckCost(outpostData.ironCost, outpostData.oilCost))
                     {
                         bool built = ConstructionManager.I.TryBuildPlayerOutpost(brain.Strategy.expansionPolicy);
-                        if (built) 
-                        {
-                            isSuccess = true;
-                            // 확장 성공 시 즉시 전선 업데이트 (TacticsManager에서 RallyPoint 동기화 수행)
-                            if (brain.tactics != null)
-                            {
-                                brain.tactics.ForceUpdateFrontline();
-                            }
-                        }
+                        if (built) isSuccess = true;
                         else { buildQueue.Dequeue(); return; }
                     }
                 }
@@ -187,7 +129,7 @@ public class PlayerProductionManager : MonoBehaviour
             }
         }
 
-        // 일꾼 자동 생산
+        // 3. 일꾼 자동 생산 (여유 자원 있을 때만)
         if (brain.IsOpeningFinished && NeedMoreWorkers())
         {
             UnitData workerData = SpawnManager.I.GetUnitDataByType((UnitType)myWorkerId);
@@ -243,36 +185,6 @@ public class PlayerProductionManager : MonoBehaviour
         }
     }
 
-    // 🔍 [신규] BotStateVisualizer용 디버그 함수 1: 다음 생산 아이템 이름
-    public string GetNextItemName()
-    {
-        if (buildQueue.Count == 0) return "Empty";
-        var next = buildQueue.Peek();
-        if (next.stepType == BuildStepType.Unit) return next.unitType.ToString();
-        if (next.stepType == BuildStepType.Upgrade) return next.upgradeData != null ? next.upgradeData.upgradeName : "Upgrade";
-        if (next.stepType == BuildStepType.Expansion) return "Expansion";
-        return "Unknown";
-    }
-
-    // 🔍 [신규] BotStateVisualizer용 디버그 함수 2: 부족한 자원 확인
-    public ResourceType? GetMissingResourceForNextItem()
-    {
-        if (buildQueue.Count == 0) return null;
-
-        BuildStep next = buildQueue.Peek();
-        int ironCost = 0;
-        int oilCost = 0;
-
-        CalculateStepCost(next, out ironCost, out oilCost);
-
-        if (ResourceManager.I != null)
-        {
-            if (ResourceManager.I.currentOil < oilCost) return ResourceType.Oil;
-            if (ResourceManager.I.currentIron < ironCost) return ResourceType.Iron;
-        }
-        return null;
-    }
-
     private void ProcessEconomyBalancing()
     {
         economyTimer += Time.deltaTime;
@@ -324,6 +236,24 @@ public class PlayerProductionManager : MonoBehaviour
             }
         }
         return list;
+    }
+
+    public ResourceType? GetMissingResourceForNextItem()
+    {
+        if (buildQueue.Count == 0) return null;
+
+        BuildStep next = buildQueue.Peek();
+        int ironCost = 0;
+        int oilCost = 0;
+
+        CalculateStepCost(next, out ironCost, out oilCost);
+
+        if (ResourceManager.I != null)
+        {
+            if (ResourceManager.I.currentOil < oilCost) return ResourceType.Oil;
+            if (ResourceManager.I.currentIron < ironCost) return ResourceType.Iron;
+        }
+        return null;
     }
 
     bool CanAffordUnit(int unitId)

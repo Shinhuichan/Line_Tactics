@@ -86,13 +86,13 @@ MonoBehaviour:
     - unitType: 111
       count: 3
     - unitType: 109
-      count: 2
+      count: 3
   - timing: 560
     requiredPowerRatio: 0
     requiredUnits:
     - unitType: 111
       count: 4
     - unitType: 109
-      count: 3
+      count: 4
   idealWorkerCount: 15
   expansionPolicy: 1

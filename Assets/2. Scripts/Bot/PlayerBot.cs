@@ -51,33 +51,6 @@ public class PlayerBot : MonoBehaviour
         scout = GetComponent<PlayerScoutManager>() ?? gameObject.AddComponent<PlayerScoutManager>();
     }
 
-    void OnEnable()
-    {
-        // 📢 건설 완료 이벤트 구독
-        BaseController.OnConstructionFinished += OnBaseBuiltHandler;
-    }
-
-    void OnDisable()
-    {
-        // 📢 이벤트 구독 해제 (메모리 누수 방지)
-        BaseController.OnConstructionFinished -= OnBaseBuiltHandler;
-    }
-
-    // ⚡ 이벤트 핸들러: 기지가 다 지어지면 호출됨
-    void OnBaseBuiltHandler(BaseController builtBase)
-    {
-        // 1. 내 팀(Enemy)의 건물이 아니면 무시
-        if (!builtBase.CompareTag(myTeamTag)) return;
-
-        Debug.Log($"🤖 [{myTeamTag}Bot] New Base Constructed: {builtBase.name}. Updating Frontline immediately!");
-
-        // 2. 전술 관리자(Tactics)에게 전선 강제 갱신 및 병력 재배치 요청
-        if (tactics != null)
-        {
-            tactics.ForceUpdateFrontline(); 
-        }
-    }
-
     void Start()
     {
         InitializeStrategy();
@@ -397,7 +370,7 @@ public class PlayerBot : MonoBehaviour
                     BuildStep step = runtimeMidGameBuildList[i];
                     if (step.stepType == BuildStepType.Unit && missingTypes.Contains(step.unitType))
                     {
-                        step.weight *= 1.375f; 
+                        step.weight *= 1.25f; 
                         runtimeMidGameBuildList[i] = step;
                     }
                 }
