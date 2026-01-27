@@ -59,6 +59,33 @@ public class EnemyBot : MonoBehaviour
         scout = GetComponent<EnemyScoutManager>();
     }
 
+    void OnEnable()
+    {
+        // 📢 건설 완료 이벤트 구독
+        BaseController.OnConstructionFinished += OnBaseBuiltHandler;
+    }
+
+    void OnDisable()
+    {
+        // 📢 이벤트 구독 해제 (메모리 누수 방지)
+        BaseController.OnConstructionFinished -= OnBaseBuiltHandler;
+    }
+
+    // ⚡ 이벤트 핸들러: 기지가 다 지어지면 호출됨
+    void OnBaseBuiltHandler(BaseController builtBase)
+    {
+        // 1. 내 팀(Enemy)의 건물이 아니면 무시
+        if (!builtBase.CompareTag(myTeamTag)) return;
+
+        Debug.Log($"🤖 [{myTeamTag}Bot] New Base Constructed: {builtBase.name}. Updating Frontline immediately!");
+
+        // 2. 전술 관리자(Tactics)에게 전선 강제 갱신 및 병력 재배치 요청
+        if (tactics != null)
+        {
+            tactics.ForceUpdateFrontline(); 
+        }
+    }
+
     void Start()
     {
         InitializeStrategy();
@@ -137,55 +164,40 @@ public class EnemyBot : MonoBehaviour
     }
 
     // 👷 [신규] 일꾼 스마트 관리 로직
-    void ManageIdleWorkers()
+    private void ManageIdleWorkers()
     {
         workerManageTimer += Time.deltaTime;
         if (workerManageTimer < WORKER_MANAGE_INTERVAL) return;
         workerManageTimer = 0f;
 
-        // 내 팀의 모든 일꾼 검색
         foreach (var unit in UnitController.activeUnits)
         {
             if (unit == null || unit.isDead || !unit.CompareTag(myTeamTag)) continue;
-            
-            // 일꾼 타입인지 확인
             if (unit.unitType != UnitType.Worker && unit.unitType != UnitType.Slave) continue;
 
             WorkerAbility worker = unit.GetComponent<WorkerAbility>();
             if (worker == null) continue;
 
-            // 1. 멍때리고 있는가? (Idle)
-            if (worker.currentState == WorkerState.Idle)
+            // [수정] Idle 상태뿐만 아니라, 할당된 기지가 없거나 기지 주변에 자원이 없는 경우 포함
+            bool isIdle = worker.currentState == WorkerState.Idle;
+            
+            if (isIdle)
             {
-                // 2. 현재 소속된 기지가 없거나, 있어도 자원이 없는가?
-                bool needsMigration = false;
-                
-                if (worker.assignedBase == null)
+                // 1. 가장 가까운 철(Iron) 광산이 있는 기지 찾기 (새 Outpost는 Iron 기반이므로)
+                BaseController bestBase = BaseController.FindNearestBaseWithResource(ResourceType.Iron, myTeamTag, worker.transform.position);
+
+                if (bestBase != null)
                 {
-                    needsMigration = true;
-                }
-                else
-                {
-                    // 일꾼이 원래 캐려던 자원(targetResourceType)이 현재 기지 주변에 있는지 확인
-                    ResourceNode nearbyNode = worker.assignedBase.GetNearestResourceNode(worker.targetResourceType);
-                    if (nearbyNode == null || nearbyNode.currentAmount <= 0)
+                    // 2. 현재 내 기지가 아니거나, 기지에 할당되지 않았다면 이주 및 채굴
+                    if (worker.assignedBase != bestBase)
                     {
-                        needsMigration = true;
+                        Debug.Log($"🤖 [{myTeamTag}Bot] Worker assigned to new Iron Base: {bestBase.name}");
+                        worker.TransferBase(bestBase);
+                        worker.SetStateToMine(ResourceType.Iron);
                     }
-                }
-
-                // 3. 이주가 필요하다면, 가장 가까운 '자원 있는' 기지로 명령
-                if (needsMigration)
-                {
-                    // 원래 캐려던 자원을 가진 가장 가까운 기지 찾기
-                    BaseController newBase = BaseController.FindNearestBaseWithResource(worker.targetResourceType, myTeamTag, worker.transform.position);
-
-                    if (newBase != null && newBase != worker.assignedBase)
+                    else if (isIdle) // 이미 그 기지에 있는데 놀고 있다면 채굴 시작
                     {
-                        // 🌟 Bot이 명령: 소속 변경 및 즉시 채굴
-                        Debug.Log($"🤖 [EnemyBot] Idle Worker ({unit.name}) detected! Relocating to {newBase.name} for {worker.targetResourceType}.");
-                        worker.TransferBase(newBase);
-                        worker.SetStateToMine(worker.targetResourceType);
+                        worker.SetStateToMine(ResourceType.Iron);
                     }
                 }
             }
@@ -387,7 +399,7 @@ public class EnemyBot : MonoBehaviour
                     BuildStep step = runtimeMidGameBuildList[i];
                     if (step.stepType == BuildStepType.Unit && missingTypes.Contains(step.unitType))
                     {
-                        step.weight *= 1.25f; 
+                        step.weight *= 1.375f; 
                         runtimeMidGameBuildList[i] = step;
                     }
                 }

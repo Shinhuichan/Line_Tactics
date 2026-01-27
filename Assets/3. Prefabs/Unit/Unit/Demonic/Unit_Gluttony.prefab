@@ -381,10 +381,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1c96b4bac4dbd54aa31630908bc93af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GluttonyAbility
+  owner: {fileID: 0}
   growthFactor: 0.2
   maxHpCap: 1000
   omnivoreUpgradeKey: OMNIVORE
-  lifestealRatio: 0.1
+  lifestealRatio: 0.05
   devourEffect: {fileID: 0}
 --- !u!58 &3173057130852275286
 CircleCollider2D:
