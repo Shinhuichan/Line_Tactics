@@ -21,11 +21,13 @@ MonoBehaviour:
     \uD654\uC5FC \uC9C0\uB300\uB97C \uC0DD\uC131\uD558\uC5EC \uC9C0\uC18D \uD53C\uD574\uB97C
     \uC785\uD788\uACE0 \uC801\uC758 \uC9C4\uACA9\uC744 \uC800\uC9C0\uD569\uB2C8\uB2E4."
   icon: {fileID: 1663954045, guid: 8e72892133560e74ca42951c47672f5e, type: 3}
+  worldSprite: {fileID: 0}
   isRangedUnit: 1
   isFlyingUnit: 0
   isMechanical: 0
+  constructionTime: 10
   ironCost: 25
-  oilCost: 70
+  oilCost: 80
   hp: 75
   defense: 0
   moveSpeed: 1

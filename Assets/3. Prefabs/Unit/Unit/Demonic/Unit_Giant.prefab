@@ -384,8 +384,9 @@ MonoBehaviour:
   owner: {fileID: 0}
   windUpTime: 0.125
   smashWidth: 0.25
-  smashLength: 1.75
+  smashLength: 1.9
   stunDuration: 1
+  knockbackDistance: 2.5
   smashEffect: {fileID: 0}
 --- !u!61 &2554483608300770783
 BoxCollider2D:

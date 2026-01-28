@@ -21,17 +21,19 @@ MonoBehaviour:
     \uC18C\uD658\uC790\uAC00 \uC0AC\uB9DD\uD558\uBA74 \uB9C8\uB825\uC744 \uC783\uACE0
     \uC7A0\uC2DC \uD6C4 \uD568\uAED8 \uC18C\uBA78\uD569\uB2C8\uB2E4."
   icon: {fileID: 1392520723, guid: e8f3f1a40b9f82343b3b3733dbef507a, type: 3}
+  worldSprite: {fileID: 0}
   isRangedUnit: 0
   isFlyingUnit: 0
   isMechanical: 0
+  constructionTime: 10
   ironCost: 0
   oilCost: 0
-  hp: 15
-  defense: 15
+  hp: 10
+  defense: 5
   moveSpeed: 2.5
   attackRange: 0.5
   detectRange: 6
-  attackDamage: 20
+  attackDamage: 15
   attackCooldown: 1
   explosionRadius: 0
   defendDistance: 0

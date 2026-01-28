@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections; // Coroutine 사용
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,6 +24,59 @@ public class EnemyProductionManager : MonoBehaviour
         this.brain = bot;
         buildQueue.Clear();
         IdentifyMyWorkerType();
+    }
+
+    private void OnEnable()
+    {
+        BaseController.OnConstructionFinished += OnBaseBuiltHandler;
+    }
+
+    private void OnDisable()
+    {
+        BaseController.OnConstructionFinished -= OnBaseBuiltHandler;
+    }
+
+    // 🛑 [문제 해결] 적군(Enemy) 일꾼도 건설 후 멈춤 방지
+    // PlayerProductionManager와 동일한 로직 적용
+    private void OnBaseBuiltHandler(BaseController builtBase)
+    {
+        if (!builtBase.CompareTag(brain.myTeamTag)) return;
+
+        StartCoroutine(AssignWorkerToMineRoutine(builtBase));
+    }
+
+    // 🌟 1프레임 지연 후 강제 채굴 명령
+    IEnumerator AssignWorkerToMineRoutine(BaseController builtBase)
+    {
+        yield return null; 
+
+        WorkerAbility builder = FindWorkerNearBase(builtBase);
+
+        if (builder != null)
+        {
+            ResourceType targetRes = ResourceType.Iron;
+            if (builtBase.currentTask == BaseTask.Oil) targetRes = ResourceType.Oil;
+
+            builder.SetStateToMine(targetRes);
+            Debug.Log($"🤖 [EnemyBot] Worker forced to mine {targetRes} at {builtBase.name} (Delayed Fix)");
+        }
+    }
+
+    WorkerAbility FindWorkerNearBase(BaseController baseCtrl)
+    {
+        float searchRadius = 5.0f;
+        Collider2D[] hits = Physics2D.OverlapCircleAll(baseCtrl.transform.position, searchRadius);
+        
+        foreach(var hit in hits)
+        {
+            WorkerAbility w = hit.GetComponent<WorkerAbility>();
+            if (w != null && w.CompareTag(brain.myTeamTag))
+            {
+                if (w.currentState == WorkerState.Idle) return w;
+            }
+        }
+        return hits.Select(h => h.GetComponent<WorkerAbility>())
+                   .FirstOrDefault(w => w != null && w.CompareTag(brain.myTeamTag));
     }
 
     public void ClearQueue()
@@ -75,35 +129,28 @@ public class EnemyProductionManager : MonoBehaviour
         }
     }
 
-    // 🌟 [핵심 수정] 생산 우선순위 및 자원 보존 로직 개선
     private void ProcessProductionQueue()
     {
         spawnTimer += Time.deltaTime;
         if (spawnTimer < SPAWN_INTERVAL) return;
 
-        // 1. 전략 큐(Build Queue) 최우선 처리
         bool queueSuccess = false;
-        int reservedIron = 0; // 큐 아이템을 위해 남겨둬야 할 자원
+        int reservedIron = 0; 
         int reservedOil = 0;
 
         if (buildQueue.Count > 0)
         {
             BuildStep nextStep = buildQueue.Peek();
             
-            // 다음 목표의 예상 비용 계산 (자원 보존을 위해)
             CalculateStepCost(nextStep, out reservedIron, out reservedOil);
 
             bool isSuccess = false;
             string teamTag = brain.myTeamTag; 
 
-            // A. 유닛 생산
             if (nextStep.stepType == BuildStepType.Unit)
             {
-                // 방어 유닛(성채 장궁병/시체병) 처리
                 if (nextStep.unitType == UnitType.BaseArcher || nextStep.unitType == UnitType.BaseCorpse)
                 {
-                    // SpawnManager에서 방어 유닛 전용 로직(비용 증가 등)이 있다면 TrySpawnBaseArcher 등을 호출해야 할 수도 있음
-                    // 여기서는 일반 유닛처럼 처리하되, CanAffordUnit이 비용을 체크함
                     if (CanAffordUnit((int)nextStep.unitType))
                     {
                         if (TryPurchaseUnit((int)nextStep.unitType)) isSuccess = true;
@@ -117,7 +164,6 @@ public class EnemyProductionManager : MonoBehaviour
                     }
                 }
             }
-            // B. 업그레이드
             else if (nextStep.stepType == BuildStepType.Upgrade)
             {
                 if (nextStep.upgradeData != null)
@@ -144,7 +190,6 @@ public class EnemyProductionManager : MonoBehaviour
                     return;
                 }
             }
-            // C. 확장
             else if (nextStep.stepType == BuildStepType.Expansion)
             {
                 if (ConstructionManager.I == null || GameManager.I == null) 
@@ -159,8 +204,16 @@ public class EnemyProductionManager : MonoBehaviour
                     if (EnemyResourceManager.I.CheckCost(enemyOutpostData.ironCost, enemyOutpostData.oilCost))
                     {
                         bool built = ConstructionManager.I.TryBuildEnemyOutpost(brain.Strategy.expansionPolicy);
-                        if (built) isSuccess = true;
-                        else { buildQueue.Dequeue(); return; } // 자리 없으면 스킵
+                        if (built) 
+                        {
+                            isSuccess = true;
+                            // 🌟 [핵심 수정] 확장 성공 시 즉시 전술 업데이트 (PlayerBot과 동일)
+                            if (brain.tactics != null)
+                            {
+                                brain.tactics.ForceUpdateFrontline();
+                            }
+                        }
+                        else { buildQueue.Dequeue(); return; } 
                     }
                 }
             }
@@ -170,24 +223,18 @@ public class EnemyProductionManager : MonoBehaviour
                 buildQueue.Dequeue();
                 spawnTimer = 0f;
                 queueSuccess = true;
-                return; // 큐 아이템 생산 성공 시, 이번 턴에는 일꾼 생산 안 함 (자원 보호)
+                return; 
             }
         }
 
-        // 2. 일꾼 자동 생산 (큐 처리 실패 혹은 큐가 비었을 때 수행)
-        // 🌟 조건: [오프닝 종료] AND [일꾼 부족] AND [큐 아이템 비용을 제외하고도 자원이 남을 때]
         if (brain.IsOpeningFinished && NeedMoreWorkers())
         {
-            // 현재 일꾼 수가 너무 적으면(예: 3마리 미만) 큐 무시하고 긴급 생산 (옵션)
-            // 여기서는 자원 보존 법칙을 따름
-            
             UnitData workerData = SpawnManager.I.GetUnitDataByType((UnitType)myWorkerId);
             if (workerData != null)
             {
                 int workerIron = workerData.ironCost;
                 int workerOil = workerData.oilCost;
 
-                // 🌟 [핵심] 현재 자원이 (일꾼 비용 + 큐 예약 비용)보다 많은가?
                 bool hasSafeResources = false;
                 if (EnemyResourceManager.I != null)
                 {
@@ -196,20 +243,17 @@ public class EnemyProductionManager : MonoBehaviour
                     hasSafeResources = safeIron && safeOil;
                 }
 
-                // 큐가 비어있다면 예약 비용은 0이므로 자연스럽게 통과
-                if (hasSafeResources && buildQueue.Count < 3) // 생산 대기열 꽉 참 방지
+                if (hasSafeResources && buildQueue.Count < 3)
                 {
                     if (TryPurchaseUnit(myWorkerId))
                     {
                         spawnTimer = 0f;
-                        // Debug.Log("[Production] 일꾼 추가 생산 (여유 자원 활용)");
                     }
                 }
             }
         }
     }
 
-    // 🧮 예약 비용 계산 헬퍼 함수
     void CalculateStepCost(BuildStep step, out int iron, out int oil)
     {
         iron = 0;
@@ -300,7 +344,7 @@ public class EnemyProductionManager : MonoBehaviour
         int ironCost = 0;
         int oilCost = 0;
 
-        CalculateStepCost(next, out ironCost, out oilCost); // 코드 재사용
+        CalculateStepCost(next, out ironCost, out oilCost); 
 
         if (EnemyResourceManager.I != null)
         {
@@ -348,5 +392,15 @@ public class EnemyProductionManager : MonoBehaviour
         if (next.stepType == BuildStepType.Unit) return next.unitType.ToString();
         if (next.stepType == BuildStepType.Expansion) return "EXPANSION"; 
         return next.upgradeData != null ? next.upgradeData.upgradeName : "Null Upgrade";
+    }
+
+    public List<string> GetBuildQueueNames()
+    {
+        return buildQueue.Select(step => 
+        {
+            if (step.stepType == BuildStepType.Unit) return $"Unit: {step.unitType}";
+            if (step.stepType == BuildStepType.Upgrade) return $"Up: {(step.upgradeData != null ? step.upgradeData.upgradeName : "Unknown")}";
+            return ">> EXPANSION <<";
+        }).ToList();
     }
 }

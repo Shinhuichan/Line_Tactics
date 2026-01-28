@@ -381,10 +381,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1def98ca5333154429848d97f14be089, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BomberAbility
-  explosionRadius: 1
-  explosionVFX: {fileID: 3953645937938674979, guid: 93d9e363fbeabcd4ab70abbb9b0f0411, type: 3}
+  owner: {fileID: 0}
+  explosionRadius: 0.5
+  explosionDamage: 50
+  explosionEffectPrefab: {fileID: 0}
   kamikazeKey: KAMIKAZE
-  hasExploded: 0
 --- !u!58 &6512204076506236178
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -420,7 +421,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Radius: 0.55
 --- !u!1 &8875363944056536297
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,9 @@
 using UnityEngine;
 using TMPro;
 
+// 🌟 [핵심 수정] Enum 정의를 이곳으로 이동 (모든 스크립트에서 참조 가능하도록)
+public enum TacticalState { Defend, Attack, Siege }
+
 public class TacticalCommandManager : SingletonBehaviour<TacticalCommandManager>
 {
     protected override bool IsDontDestroy() => false;
@@ -72,15 +75,33 @@ public class TacticalCommandManager : SingletonBehaviour<TacticalCommandManager>
         UpdateUI();
     }
 
-    // 🤖 [신규] 봇 전용 강제 명령 함수 (이게 없어서 오류가 났습니다)
+    // 🤖 [신규] 봇 전용: 특정 거점 인덱스로 즉시 이동 명령
+    // Bot이 "아, 저기 Outpost가 지어졌으니 저기로 집결하자"라고 판단할 때 사용
+    public void SetRallyPointByIndex(int index)
+    {
+        if (ConstructionManager.I == null) return;
+        if (index < 0 || index >= ConstructionManager.I.tacticalPoints.Count) return;
+
+        // 이미 거기가 목표라면 무시 (중복 명령 방지)
+        if (currentRallyIndex == index) return;
+
+        currentRallyIndex = index;
+        // 봇은 이동 시 기본적으로 Defend(진형 유지 이동) 상태를 유지
+        if (currentState != TacticalState.Siege) 
+        {
+            currentState = TacticalState.Defend;
+        }
+        
+        UpdateRallyPoint();
+        Debug.Log($"🤖 Bot Command: Rally Point Moved to Index {index}");
+    }
+
+    // 🤖 [신규] 봇 전용 강제 명령 함수
     public void SetState(TacticalState newState)
     {
-        // 상태 변경
-        currentState = newState;
+        if (currentState == newState) return;
 
-        // (옵션) 봇이 '공격' 명령을 내리면, 자동으로 다음 거점으로 전진하게 할 수도 있습니다.
-        // 현재는 단순히 상태값만 바꾸고 UI를 갱신합니다.
-        
+        currentState = newState;
         UpdateUI();
     }
 

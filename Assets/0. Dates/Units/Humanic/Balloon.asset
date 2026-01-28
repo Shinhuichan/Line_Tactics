@@ -21,9 +21,11 @@ MonoBehaviour:
     \uACA9\uCD94\uB420 \uB54C \uC801\uC9C4\uC73C\uB85C \uACE4\uB450\uBC15\uC9C8\uCCD0
     \uCD5C\uD6C4\uC758 \uC790\uD3ED \uACF5\uACA9\uC744 \uAC10\uD589\uD569\uB2C8\uB2E4."
   icon: {fileID: 1563125203, guid: 8e72892133560e74ca42951c47672f5e, type: 3}
+  worldSprite: {fileID: 0}
   isRangedUnit: 0
   isFlyingUnit: 1
   isMechanical: 1
+  constructionTime: 10
   ironCost: 130
   oilCost: 40
   hp: 240
@@ -33,6 +35,6 @@ MonoBehaviour:
   detectRange: 6
   attackDamage: 20
   attackCooldown: 1.5
-  explosionRadius: 1
+  explosionRadius: 0.5
   defendDistance: 2.5
   racialShieldPrefab: {fileID: 0}

@@ -306,17 +306,16 @@ public class UnitController : MonoBehaviour
 
     public void Initialize(UnitData data, string myTag)
     {
-        // 🌟 [신규] 데이터 캐싱 (호버 기능을 위해 원본 데이터를 저장해둡니다)
+        // 🌟 [신규] 데이터 캐싱
         this._linkedData = data;
         this.unitType = data.type;
-        this.unitRace = data.race; // 🧬 데이터에서 종족 정보 가져오기
-        this.racialShieldPrefab = data.racialShieldPrefab; // 🛡️ 프리팹 저장
+        this.unitRace = data.race;
+        this.racialShieldPrefab = data.racialShieldPrefab;
         this.baseMaxHP = data.hp;
         this.baseDefense = data.defense;
         this.baseMoveSpeed = data.moveSpeed;
         this.baseAttackDamage = data.attackDamage;
-        this.baseAttackCooldown = data.attackCooldown; // 🌟 쿨타임 원본 저장
-        // 🧱 속성 정보 가져오기
+        this.baseAttackCooldown = data.attackCooldown;
         this.isMechanical = data.isMechanical;
         
         this.attackRange = data.attackRange;
@@ -330,7 +329,7 @@ public class UnitController : MonoBehaviour
         this.siegeRandomX = Random.Range(-0.5f, 0.5f);
         this.siegeRandomY = Random.Range(-0.5f, 0.5f);
 
-        this.raceTraitTimer = 0f; // 타이머 초기화
+        this.raceTraitTimer = 0f;
 
         this.gameObject.tag = myTag;
         if (myTag == "Player")
@@ -344,7 +343,6 @@ public class UnitController : MonoBehaviour
             myTransform.rotation = Quaternion.Euler(0, 0, 180);
         }
 
-        // 엔젤릭이면 시작하자마자 최대 체력의 20% 보호막 부여
         if (unitRace == UnitRace.Angelic && racialShieldPrefab != null)
         {
             ApplyShield(maxHP * 0.2f, racialShieldPrefab);
@@ -355,13 +353,19 @@ public class UnitController : MonoBehaviour
         multiplierMoveSpeed = 1.0f;
         multiplierCooldown = 1.0f;
 
-        RecalculateStats();
-        this.currentHP = this.maxHP;
         this.isDead = false;
-        
-        InitUI();
+        InitUI(); // UI 슬라이더 연결
+
+        // 🛠️ [핵심 수정 1] Ability 초기화를 스탯 계산보다 '먼저' 해야 함!
+        // 그래야 GiantAbility가 owner를 알고 있는 상태에서 UpdateGiantStats를 수행할 수 있음.
         if (myAbility != null) myAbility.Initialize(this);
 
+        // 스탯 계산 (이제 Ability가 owner를 아는 상태이므로 안전함)
+        RecalculateStats();
+        
+        // 초기화 시점에는 체력을 가득 채움 (RecalculateStats 이후에 설정)
+        this.currentHP = this.maxHP;
+        if (hpSlider != null) hpSlider.value = currentHP;
     }
 
     // ⚔️ [신규] 공격 이동 명령 (EnemyTacticsManager에서 호출)
@@ -375,9 +379,13 @@ public class UnitController : MonoBehaviour
     // 🌟 [핵심 수정] 스탯 재계산 로직
     public void RecalculateStats()
     {
+        // 🛠️ [핵심 수정 2] 기존 유닛 업그레이드 대응을 위한 체력 비율 저장
+        float oldMaxHP = maxHP;
+        float hpRatio = (oldMaxHP > 0 && currentHP > 0) ? (currentHP / oldMaxHP) : 1.0f;
+
         if (UpgradeManager.I == null)
         {
-            // 매니저 없을 때 기본값
+            // 매니저 없을 때 기본값 로직 (기존과 동일)
             maxHP = baseMaxHP;
             defense = baseDefense;
             
@@ -388,48 +396,52 @@ public class UnitController : MonoBehaviour
             attackDamage = (baseAttackDamage * multiplierAttack) * damageBuffMultiplier;
             
             attackCooldown = baseAttackCooldown / multiplierCooldown;
+            
+            // 매니저가 없어도 체력 변동 시 비율 유지 적용
+            if (oldMaxHP > 0 && maxHP != oldMaxHP)
+            {
+                 currentHP = maxHP * hpRatio;
+            }
             return;
         }
 
         string myTag = gameObject.tag; 
 
-        // 1. 기본 업그레이드 매니저 스탯 (체력, 방어력, 이속, 공력)
+        // 1. 기본 업그레이드 매니저 스탯
         float hpBonus = UpgradeManager.I.GetStatBonus(unitType, StatType.MaxHP, myTag);
         float defBonus = UpgradeManager.I.GetStatBonus(unitType, StatType.Defense, myTag);
         float spdBonus = UpgradeManager.I.GetStatBonus(unitType, StatType.MoveSpeed, myTag);
         float atkBonus = UpgradeManager.I.GetStatBonus(unitType, StatType.AttackDamage, myTag);
 
-        // 2. 척후병 전용 업그레이드 체크 (SKIRMISHER_FRENZY)
+        // 2. 척후병 전용 업그레이드 체크
         float skirmisherSpeedMult = 1.0f;
         float skirmisherAtkSpdMult = 1.0f;
 
-        // 🦶 [신규] 거인병 거대화 배율 (기본 1.0)
+        // 🦶 거인병 거대화 배율
         float giantGrowthMultiplier = 1.0f;
 
         if (unitType == UnitType.Skirmisher && UpgradeManager.I.IsAbilityActive("SKIRMISHER_FRENZY", myTag))
         {
-            skirmisherSpeedMult = 1.25f;  // 이동 속도 25% 증가
-            skirmisherAtkSpdMult = 1.25f; // 공격 속도 25% 증가
+            skirmisherSpeedMult = 1.25f;
+            skirmisherAtkSpdMult = 1.25f; 
         }
 
         // B. 거인병 로직 (거대화 I, II)
         if (unitType == UnitType.Giant)
         {
-            // 2단계 (50% 증가)
             if (UpgradeManager.I.IsAbilityActive("GIANT_GROWTH_2", myTag))
             {
                 giantGrowthMultiplier = 1.5f; 
             }
-            // 1단계 (25% 증가) - 2단계가 아닐 때만 체크
             else if (UpgradeManager.I.IsAbilityActive("GIANT_GROWTH_1", myTag))
             {
                 giantGrowthMultiplier = 1.25f;
             }
 
-            // 시각적 크기 변경 (Scale)
+            // 시각적 크기 변경
             transform.localScale = Vector3.one * giantGrowthMultiplier;
 
-            // 광역 공격 범위(SmashLength) 연동
+            // 광역 공격 범위 연동 (이제 안전함)
             GiantAbility giantAbility = GetComponent<GiantAbility>();
             if (giantAbility != null)
             {
@@ -438,12 +450,9 @@ public class UnitController : MonoBehaviour
         }
 
         // 3. 최종 스탯 계산
-        // 체력: (기본 + 보너스) * 거대화 배율
         maxHP = (baseMaxHP + hpBonus) * giantGrowthMultiplier;
-        
         defense = baseDefense + defBonus + bonusDefenseBuff; 
         
-        // 공격 범위: (기본) * 거대화 배율 + 작살병 보너스 등
         float rangeBase = (_linkedData != null) ? _linkedData.attackRange : attackRange;
         float rangeBonus = 0f;
         if (unitType == UnitType.Harpooner && UpgradeManager.I.IsAbilityActive("ENHANCED_HARPOON", myTag)) rangeBonus = 1.0f;
@@ -453,22 +462,26 @@ public class UnitController : MonoBehaviour
         float finalSlowFactor = isSlowed ? (1.0f - currentSlowIntensity) : 1.0f;
         moveSpeed = ((baseMoveSpeed + spdBonus) * multiplierMoveSpeed * skirmisherSpeedMult) * finalSlowFactor;
 
-        // 공격력: (기본 + 보너스) * 버프 * 거대화 배율
         float finalDamageBuff = 1.0f + trumpeterBuffVal;
         attackDamage = ((baseAttackDamage + atkBonus) * multiplierAttack) * finalDamageBuff * giantGrowthMultiplier;
 
-        // 🩸 [핵심 수정] 공격 속도 계산
-        // 살육의 나팔이 켜져있고 버프 중이라면 10% (1.1배) 증가
         float slaughterSpeedMult = (HasTrumpeterBuff && isSlaughterBuffActive) ? 1.1f : 1.0f;
-
         float totalCooldownMult = multiplierCooldown * skirmisherAtkSpdMult * (1.0f + tempAttackSpeedBuffVal);
         attackCooldown = baseAttackCooldown / totalCooldownMult;
 
+        // UI 갱신
         if (hpSlider != null) hpSlider.maxValue = maxHP;
 
-        // 현재 체력이 최대 체력보다 커지는 경우(업그레이드 직후) 비율 유지 혹은 회복 로직은 필요에 따라 추가
-        // 여기서는 상한선만 맞춤
-        if (currentHP > maxHP) currentHP = maxHP;
+        // 🛠️ [핵심 수정 3] 이미 소환된 유닛도 업그레이드 시 체력이 비율대로 늘어나야 함
+        // (예: 체력 50/100 상태에서 MaxHP가 150이 되면 -> 75/150이 됨)
+        // 단, 새로 생성되는 순간(Initialize)에는 currentHP가 초기화되기 전이므로 적용하지 않음 (Initialize 마지막에 maxHP로 덮어씌움)
+        if (oldMaxHP > 0 && Mathf.Abs(oldMaxHP - maxHP) > 0.1f) 
+        {
+            currentHP = maxHP * hpRatio;
+        }
+
+        // 체력바 UI 색상 등 갱신
+        UpdateHealthColor();
     }
 
     // 🛠️ 외부(Ability)에서 버프/디버프 걸 때 호출
@@ -599,7 +612,6 @@ public class UnitController : MonoBehaviour
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, attackRange);
         GameObject bestTarget = null;
 
-        // [1] 암살병 전용 로직 (기존 유지)
         if (unitType == UnitType.Assassin)
         {
             GameObject rangedInReach = null;
@@ -614,41 +626,31 @@ public class UnitController : MonoBehaviour
                 {
                     UnitController targetUnit = obj.GetComponent<UnitController>();
                     
-                    // 1. 은신 및 무적 체크 (기존 유지)
                     if (targetUnit != null && targetUnit.isStealthed) continue;
 
-                    // ✈️ [신규] 근거리 vs 공중 체크 (암살자도 근거리라면 공중 공격 불가)
-                    // 암살자가 근거리(isRangedUnit == false)라고 가정 시 적용
-                    if (!isRangedUnit && targetUnit != null && targetUnit.isFlyingUnit) continue;
+                    // ✈️ [핵심] 암살자도 근거리(isRangedUnit == false)라면 공중 공격 불가
+                    if (!this.isRangedUnit && targetUnit != null && targetUnit.isFlyingUnit) continue;
 
                     if (targetUnit != null)
                     {
                         if (targetUnit.isRangedUnit) rangedInReach = obj; 
                         else meleeInReach = obj; 
                     }
-                    else meleeInReach = obj; // 건물(BaseController) 등
+                    else meleeInReach = obj; 
                 }
             }
 
             if (rangedInReach != null) bestTarget = rangedInReach;
             else if (meleeInReach != null)
             {
-                // 사거리 내에 원거리가 없으면? 맵 전체에서 원거리를 찾아봄 (기존 로직)
                 GameObject globalTarget = FindNearestTarget(enemyTag);
                 UnitController globalUnit = globalTarget != null ? globalTarget.GetComponent<UnitController>() : null;
-                
-                // ✈️ [신규] 글로벌 타겟이 공중이면 무시해야 함?
-                // 여기서는 "원거리 유닛을 찾으러 가는 행동"이므로, 
-                // 내가 근거리인데 글로벌 타겟이 공중이면 쫓아가도 못 때림 -> 무시 로직 필요할 수 있음.
-                // 하지만 일단 'FindNearestTarget'은 거리만 보므로, 여기서 세부 필터링은 복잡해질 수 있어 
-                // "눈앞의 적(meleeInReach)"을 때리는 것으로 만족.
                 
                 if (globalUnit != null && globalUnit.isRangedUnit) return null; 
                 
                 bestTarget = meleeInReach;
             }
         }
-        // [2] 일반 유닛 & 성채 장궁병 로직
         else 
         {
             float closestDistSqr = Mathf.Infinity;
@@ -662,17 +664,14 @@ public class UnitController : MonoBehaviour
                 {
                     UnitController targetUnit = target.GetComponent<UnitController>();
                     
-                    // 1. 은신 유닛 무시 (기존 유지)
                     if (targetUnit != null && targetUnit.isStealthed) continue;
 
-                    // ✈️ [신규] 근거리 유닛은 비행 유닛 완전 무시
-                    // (건물인 BaseController는 targetUnit이 null이거나 isFlyingUnit이 false이므로 공격 대상이 됨)
-                    if (!isRangedUnit && targetUnit != null && targetUnit.isFlyingUnit) 
+                    // ✈️ [핵심] 근거리 유닛은 비행 유닛 완전 무시
+                    if (!this.isRangedUnit && targetUnit != null && targetUnit.isFlyingUnit) 
                     {
-                        continue; // 아예 타겟 후보로 고려하지 않음 (무시)
+                        continue; 
                     }
 
-                    // 가장 가까운 적 찾기 (기존 유지)
                     float distSqr = (target.transform.position - transform.position).sqrMagnitude;
                     if (distSqr < closestDistSqr)
                     {
@@ -1377,7 +1376,7 @@ public class UnitController : MonoBehaviour
         }
     }
 
-    // (기존에 작성해주신 FindEnemyInDetectRange 함수 활용)
+    // 🌟 [수정] 감지 범위 내 적 찾기 (근거리 유닛은 공중 유닛 무시)
     GameObject FindEnemyInDetectRange()
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, detectRange);
@@ -1388,9 +1387,14 @@ public class UnitController : MonoBehaviour
         {
             if (col.CompareTag(enemyTag) || col.CompareTag(targetBaseTag))
             {
-                // 은신한 적(암살병)은 감지 못함 (DetectRange여도 안 보임)
                 UnitController targetUnit = col.GetComponent<UnitController>();
-                if (targetUnit != null && targetUnit.isStealthed) continue;
+                if (targetUnit != null)
+                {
+                    // 1. 은신 체크
+                    if (targetUnit.isStealthed) continue;
+                    // ✈️ [핵심] 근거리는 공중 유닛 무시
+                    if (!this.isRangedUnit && targetUnit.isFlyingUnit) continue;
+                }
 
                 float distSqr = (col.transform.position - transform.position).sqrMagnitude;
                 if (distSqr < minDistanceSqr)
@@ -1617,6 +1621,7 @@ public class UnitController : MonoBehaviour
         }
     }
 
+    // 🚩 [핵심 수정] 기수병 최적 위치 이동 로직 (노동병 제외)
     Vector3 CalculateBestBuffPos()
     {
         // 1. 모든 아군 찾기
@@ -1626,12 +1631,14 @@ public class UnitController : MonoBehaviour
         float maxScore = -1f;
 
         // 2. 각 아군의 위치를 '후보지'로 가정하고 점수 매기기
-        // (모든 좌표를 스캔하는 건 너무 무거우므로, 아군이 있는 위치 위주로 검사)
         foreach (GameObject candidate in allies)
         {
-            // 기지나 자기 자신 위치는 제외할 수도 있지만, 겹쳐도 상관없음
+            // 기지나 자기 자신 위치는 제외
             UnitController candidateUnit = candidate.GetComponent<UnitController>();
-            if (candidateUnit == null) continue; // 유닛이 아닌 경우(혹시 모르니)
+            if (candidateUnit == null) continue; 
+            
+            // 🚫 [수정] 노동병의 위치는 후보지로 고려하지 않음 (전투에 도움 안됨)
+            if (candidateUnit.unitType == UnitType.Worker) continue;
 
             // 후보 위치 (약간의 랜덤 오차를 줘서 완벽하게 겹치지 않게 함)
             Vector3 testPos = candidate.transform.position;
@@ -1642,7 +1649,7 @@ public class UnitController : MonoBehaviour
             // 이 위치(testPos)에서 내 버프 범위(attackRange) 안에 들어오는 아군들의 가치 합산
             foreach (GameObject ally in allies)
             {
-                if (ally.GetComponent<BaseController>() != null) continue; // 기지는 점수 없음
+                if (ally.GetComponent<BaseController>() != null) continue; 
 
                 float d = Vector3.Distance(testPos, ally.transform.position);
                 if (d <= attackRange)
@@ -1650,6 +1657,9 @@ public class UnitController : MonoBehaviour
                     UnitController u = ally.GetComponent<UnitController>();
                     if (u != null)
                     {
+                        // 🚫 [수정] 주변에 노동병이 있어도 점수에 포함시키지 않음 (유인 효과 제거)
+                        if (u.unitType == UnitType.Worker) continue;
+
                         score += GetUnitValue(u.unitType);
                     }
                 }
@@ -1663,7 +1673,7 @@ public class UnitController : MonoBehaviour
             }
         }
         
-        // 3. 만약 주변에 아무도 없다면? 기지 앞으로 이동
+        // 3. 만약 주변에 아무도 없다면(혹은 노동병만 있다면)? 기지 앞으로 이동
         if (maxScore <= 0)
         {
             GameObject myBase = GameObject.FindGameObjectWithTag(myBaseTag);
@@ -1956,10 +1966,9 @@ public class UnitController : MonoBehaviour
             FloatingTextManager.I.ShowText(transform.position, $"+{Mathf.RoundToInt(amount)}", Color.green, 25);
     }
 
-    // 🔍 맵 전체에서 가장 가까운 적(또는 적 기지)을 찾는 함수
+    // 🌟 [수정] 인자 없는 버전도 공중 유닛 필터링 적용
     GameObject FindNearestTarget()
     {
-        // Tag가 일치하는 모든 오브젝트(유닛 + 기지)를 찾음
         GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
         
         GameObject nearest = null;
@@ -1968,7 +1977,15 @@ public class UnitController : MonoBehaviour
 
         foreach (GameObject enemy in enemies)
         {
-            // 거리의 제곱 비교 (성능상 sqrt보다 빠름)
+            UnitController targetUnit = enemy.GetComponent<UnitController>();
+            if (targetUnit != null)
+            {
+                // 1. 은신 체크
+                if (targetUnit.isStealthed) continue;
+                // ✈️ [핵심] 근거리는 공중 유닛 무시
+                if (!this.isRangedUnit && targetUnit.isFlyingUnit) continue;
+            }
+
             float distSqr = (enemy.transform.position - currentPos).sqrMagnitude;
             if (distSqr < minDistanceSqr)
             {
@@ -1978,6 +1995,7 @@ public class UnitController : MonoBehaviour
         }
         return nearest;
     }
+
     void RotateTowards(Vector3 targetPos)
     {
         Vector3 dir = targetPos - transform.position;
@@ -2199,17 +2217,13 @@ public class UnitController : MonoBehaviour
 
             UnitController targetUnit = t.GetComponent<UnitController>();
             
-            // 1. 은신 감지 불가
             if (targetUnit != null && targetUnit.isStealthed) continue;
 
             // 🛑 2. [신규] 근거리 유닛은 공중 유닛 공격 불가!
-            // (나는 원거리가 아니고, 상대는 공중 유닛이면 패스)
             if (!this.isRangedUnit && targetUnit != null && targetUnit.isFlyingUnit) continue;
 
-            // 🎯 [핵심] 암살병이 원거리를 찾을 때
             if (prioritizeRanged)
             {
-                // 원거리가 아니면(isRangedUnit == false) 무시!
                 if (targetUnit == null || !targetUnit.isRangedUnit) continue;
             }
 

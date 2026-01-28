@@ -11,7 +11,6 @@ public class FlagBearerAbility : UnitAbility
     public float shieldCooldown = 10.0f;        
     public float shieldRatio = 0.05f;           
     
-    // 🌟 [핵심] 보호막용 프리팹 (에디터에서 파란색 원이나 방패 이펙트 연결)
     public GameObject protectionPrefab; 
 
     private List<UnitController> buffedUnits = new List<UnitController>();
@@ -51,6 +50,9 @@ public class FlagBearerAbility : UnitAbility
                 UnitController ally = hit.GetComponent<UnitController>();
                 if (ally != null && ally.currentHP > 0)
                 {
+                    // 🚫 [수정] 노동병(Worker)은 전투 유닛이 아니므로 버프/보호 대상에서 완전히 제외
+                    if (ally.unitType == UnitType.Worker) continue;
+
                     currentFrameUnits.Add(ally);
                     
                     if (!buffedUnits.Contains(ally))
@@ -93,7 +95,6 @@ public class FlagBearerAbility : UnitAbility
 
         float shieldAmount = ally.maxHP * shieldRatio;
         
-        // 🌟 프리팹을 같이 전달 (없으면 안 그려짐)
         ally.ApplyShield(shieldAmount, protectionPrefab);
 
         shieldTimers[id] = Time.time;

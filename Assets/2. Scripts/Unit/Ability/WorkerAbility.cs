@@ -78,7 +78,6 @@ public class WorkerAbility : UnitAbility
         BaseController bestBase = null;
         float minDst = Mathf.Infinity;
 
-        // 1. 가장 가까운 아군 기지 찾기 (태어난 곳)
         foreach(var b in bases)
         {
             if (!b.CompareTag(owner.tag)) continue;
@@ -92,25 +91,11 @@ public class WorkerAbility : UnitAbility
             }
         }
 
-        // 2. 기지에 소속되고 명령 하달 받기
         if (bestBase != null)
         {
             JoinBase(bestBase);
-
-            // 🌟 기지의 현재 태세에 따라 즉시 행동 개시
-            switch (bestBase.currentTask)
-            {
-                case BaseTask.Iron:
-                    SetStateToMine(ResourceType.Iron);
-                    break;
-                case BaseTask.Oil:
-                    SetStateToMine(ResourceType.Oil);
-                    break;
-                case BaseTask.Idle:
-                default:
-                    SetStateToIdle();
-                    break;
-            }
+            // 초기 생성 시 기지 태세 따름
+            AutoMineFromBaseTask(bestBase);
         }
         else
         {
@@ -120,6 +105,17 @@ public class WorkerAbility : UnitAbility
         
         if (WorkerDashboardManager.I != null) 
             WorkerDashboardManager.I.RebuildSlotList(); 
+    }
+
+    // 🤖 [신규] 기지 명령에 따라 자동 채굴 시작
+    void AutoMineFromBaseTask(BaseController baseCtrl)
+    {
+        switch (baseCtrl.currentTask)
+        {
+            case BaseTask.Iron: SetStateToMine(ResourceType.Iron); break;
+            case BaseTask.Oil: SetStateToMine(ResourceType.Oil); break;
+            default: SetStateToIdle(); break;
+        }
     }
 
     void JoinBase(BaseController baseCtrl)
@@ -287,6 +283,7 @@ public class WorkerAbility : UnitAbility
         }
     }
 
+    // 🌟 [수정] 전역 검색 (fallback용)
     void FindNearestResourceGlobal()
     {
         ResourceNode[] allNodes = FindObjectsByType<ResourceNode>(FindObjectsSortMode.None);
@@ -295,7 +292,7 @@ public class WorkerAbility : UnitAbility
 
         foreach (var node in allNodes)
         {
-            if (node.resourceType == targetResourceType)
+            if (node.resourceType == targetResourceType && node.currentAmount > 0)
             {
                 float d = Vector3.Distance(transform.position, node.transform.position);
                 if (d < closestDist)
@@ -574,7 +571,15 @@ public class WorkerAbility : UnitAbility
 
         if (assignedBase == null) { SetStateToIdle(); return; }
 
+        // 1. 기지 주변 검색
         ResourceNode node = assignedBase.GetAvailableResource(type);
+
+        // 2. [강력한 보정] 기지 검색 실패 시, 현재 위치에서 전역 검색 (Outpost 건설 직후 등)
+        if (node == null)
+        {
+            FindNearestResourceGlobal(); // targetNodeTransform 갱신
+            if (targetNodeTransform != null) node = targetNodeScript;
+        }
 
         if (node != null)
         {
@@ -585,7 +590,7 @@ public class WorkerAbility : UnitAbility
         }
         else
         {
-            // 자원이 없으면 바로 멍때리지 말고 스마트 이주 체크
+            // 진짜 없으면 포기
             AttemptFindNewResourceOrMigrate();
         }
     }
@@ -606,7 +611,7 @@ public class WorkerAbility : UnitAbility
         owner.isManualMove = true; 
     }
 
-    // 🏗️ [수정] 건설 완료 시, 해당 기지로 소속을 옮기고 기지의 태세에 따라 채집 시작
+    // 🏗️ [핵심 수정] 건설 완료 시 처리 로직 개선
     void ProcessBuilding()
     {
         if (targetConstructionSite == null)
@@ -617,24 +622,25 @@ public class WorkerAbility : UnitAbility
 
         if (targetConstructionSite.isConstructed)
         {
-            // 1. 소속 변경 (건설한 그 집이 이제 내 집이다)
-            TransferBase(targetConstructionSite);
-            BaseController constructedBase = targetConstructionSite; // 참조 저장
-
-            // 2. 건설 타겟 초기화
+            // 1. 소속 변경
+            BaseController newBase = targetConstructionSite;
+            TransferBase(newBase);
             targetConstructionSite = null;
 
-            // 🌟 Q2: 이미 지어진 곳으로 배치된다면 기지의 태세(currentTask)를 따른다.
-            // BaseController의 기본 태세는 Iron이므로, 막 지어진 기지는 Iron을 캐러 감.
-            ResourceType nextTask = ResourceType.Iron; 
-
-            if (constructedBase.currentTask == BaseTask.Oil)
-            {
-                nextTask = ResourceType.Oil;
-            }
-            // (만약 Idle 상태라면 Iron을 기본으로 하거나 Idle로 가야하지만, 보통 확장은 자원때문이므로 Iron 기본값 유지)
+            // 2. 강제 채굴 시작 (기지 명령 따름)
+            // 우선순위: 기지 명령(Oil/Iron) -> Iron(기본)
+            ResourceType targetRes = (newBase.currentTask == BaseTask.Oil) ? ResourceType.Oil : ResourceType.Iron;
             
-            SetStateToMine(nextTask); 
+            Debug.Log($"✅ [Worker] Construction Finished at {newBase.name}. Starting mining {targetRes}.");
+            
+            // 3. 자원 찾기 및 상태 전환 (SetStateToMine 내부에서 전역 검색 Fallback 포함됨)
+            SetStateToMine(targetRes);
+
+            // 만약 SetStateToMine이 실패해서 Idle이 되었다면, Oil이라도 시도해본다.
+            if (currentState == WorkerState.Idle && targetRes == ResourceType.Iron)
+            {
+                SetStateToMine(ResourceType.Oil);
+            }
             return;
         }
 

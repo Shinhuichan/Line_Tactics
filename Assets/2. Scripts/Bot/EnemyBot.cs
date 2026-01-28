@@ -34,17 +34,16 @@ public class EnemyBot : MonoBehaviour
     
     private TacticalState lastTacticalState = TacticalState.Defend;
 
-    // ⚖️ 런타임 가중치 관리 리스트
     private List<BuildStep> runtimeMidGameBuildList = new List<BuildStep>();
 
-    // 👷 [신규] 일꾼 관리 타이머
     private float workerManageTimer = 0f;
-    private const float WORKER_MANAGE_INTERVAL = 1.0f; // 1초마다 체크
+    private const float WORKER_MANAGE_INTERVAL = 1.0f;
 
     [HideInInspector] public int currentWaveIndex = 0;
     [HideInInspector] public float gameTime = 0f;
 
     private static EnemyBot _instance;
+    // 🌟 [수정] EnemyCommandManager를 통해 상태 반환
     public static TacticalState enemyState => (_instance && _instance.tactics) ? _instance.tactics.currentState : TacticalState.Defend;
     public static Vector3 enemyFrontLinePos => (_instance && _instance.tactics) ? _instance.tactics.enemyFrontLinePos : Vector3.zero;
     
@@ -57,6 +56,15 @@ public class EnemyBot : MonoBehaviour
         production = GetComponent<EnemyProductionManager>();
         tactics = GetComponent<EnemyTacticsManager>();
         scout = GetComponent<EnemyScoutManager>();
+
+        // 🌟 [신규] 구조 통합: EnemyCommandManager가 없으면 추가
+        if (EnemyCommandManager.I == null)
+        {
+            if (GetComponent<EnemyCommandManager>() == null)
+            {
+                gameObject.AddComponent<EnemyCommandManager>();
+            }
+        }
     }
 
     void Start()
@@ -132,32 +140,26 @@ public class EnemyBot : MonoBehaviour
         FillProductionQueue();
         MonitorStrategyStatus();
         
-        // 👷 [신규] 봇이 직접 일꾼 관리 (멍때리는 애들 재배치)
         ManageIdleWorkers();
     }
 
-    // 👷 [신규] 일꾼 스마트 관리 로직
     void ManageIdleWorkers()
     {
         workerManageTimer += Time.deltaTime;
         if (workerManageTimer < WORKER_MANAGE_INTERVAL) return;
         workerManageTimer = 0f;
 
-        // 내 팀의 모든 일꾼 검색
         foreach (var unit in UnitController.activeUnits)
         {
             if (unit == null || unit.isDead || !unit.CompareTag(myTeamTag)) continue;
             
-            // 일꾼 타입인지 확인
             if (unit.unitType != UnitType.Worker && unit.unitType != UnitType.Slave) continue;
 
             WorkerAbility worker = unit.GetComponent<WorkerAbility>();
             if (worker == null) continue;
 
-            // 1. 멍때리고 있는가? (Idle)
             if (worker.currentState == WorkerState.Idle)
             {
-                // 2. 현재 소속된 기지가 없거나, 있어도 자원이 없는가?
                 bool needsMigration = false;
                 
                 if (worker.assignedBase == null)
@@ -166,7 +168,6 @@ public class EnemyBot : MonoBehaviour
                 }
                 else
                 {
-                    // 일꾼이 원래 캐려던 자원(targetResourceType)이 현재 기지 주변에 있는지 확인
                     ResourceNode nearbyNode = worker.assignedBase.GetNearestResourceNode(worker.targetResourceType);
                     if (nearbyNode == null || nearbyNode.currentAmount <= 0)
                     {
@@ -174,15 +175,12 @@ public class EnemyBot : MonoBehaviour
                     }
                 }
 
-                // 3. 이주가 필요하다면, 가장 가까운 '자원 있는' 기지로 명령
                 if (needsMigration)
                 {
-                    // 원래 캐려던 자원을 가진 가장 가까운 기지 찾기
                     BaseController newBase = BaseController.FindNearestBaseWithResource(worker.targetResourceType, myTeamTag, worker.transform.position);
 
                     if (newBase != null && newBase != worker.assignedBase)
                     {
-                        // 🌟 Bot이 명령: 소속 변경 및 즉시 채굴
                         Debug.Log($"🤖 [EnemyBot] Idle Worker ({unit.name}) detected! Relocating to {newBase.name} for {worker.targetResourceType}.");
                         worker.TransferBase(newBase);
                         worker.SetStateToMine(worker.targetResourceType);
@@ -247,7 +245,7 @@ public class EnemyBot : MonoBehaviour
             if (tactics.TryTriggerWave(nextWave))
             {
                 currentWaveIndex++;
-                InitializeRuntimeBuildList(); 
+                InitializeRuntimeBuildList(); // 🌟 Wave 완료 시 가중치 초기화
             }
         }
     }
@@ -256,7 +254,6 @@ public class EnemyBot : MonoBehaviour
     {
         if (activeStrategy == null) return;
 
-        // 1. 오프닝 빌드 (기존 유지)
         if (!isOpeningFinished) 
         {
             if (!hasLoadedOpening && activeStrategy.openingBuildOrder.Count > 0)
@@ -284,10 +281,8 @@ public class EnemyBot : MonoBehaviour
         }
         else
         {
-            // 2. 중반 운영 (스마트 확장 시스템 적용)
             if (production.GetQueueCount() < 2 && runtimeMidGameBuildList.Count > 0)
             {
-                // ⛺ [스마트 확장 체크]
                 int remainingIron = GetTotalRemainingIron();
                 int currentIron = EnemyResourceManager.I != null ? EnemyResourceManager.I.currentIron : 0;
                 
@@ -308,7 +303,7 @@ public class EnemyBot : MonoBehaviour
                     else
                     {
                         Debug.Log("🤖 [EnemyBot] No Land Left! All-In Attack Triggered!");
-                        tactics.LaunchAllOutAttack(); 
+                        tactics.TryTriggerWave(new AttackWave()); // Force Attack
                     }
                     return; 
                 }
@@ -318,6 +313,8 @@ public class EnemyBot : MonoBehaviour
                 candidates.Add(new BuildStep { stepType = BuildStepType.Expansion, weight = expansionWeight });
 
                 BuildStep pickedStep = GetWeightedRandomStep(candidates);
+                
+                // 🌟 [수정] Wave에 필요한 유닛이면 가중치를 계속 증폭 (Reset 방지)
                 UpdateWeightsForNextWave(pickedStep);
 
                 if (pickedStep.stepType == BuildStepType.Unit)
@@ -349,6 +346,7 @@ public class EnemyBot : MonoBehaviour
         return Mathf.Max(1f, weight); 
     }
 
+    // 🌟 [핵심 수정] Wave 필요 유닛의 가중치를 증폭시키는 로직 개선
     void UpdateWeightsForNextWave(BuildStep pickedStep)
     {
         if (pickedStep.stepType == BuildStepType.Expansion) return; 
@@ -356,40 +354,32 @@ public class EnemyBot : MonoBehaviour
         if (currentWaveIndex >= activeStrategy.attackWaves.Count) return;
         AttackWave nextWave = activeStrategy.attackWaves[currentWaveIndex];
         
-        bool isRequiredAndMissing = false;
-
-        if (pickedStep.stepType == BuildStepType.Unit)
+        // 1. 필요한 유닛 목록 확인
+        HashSet<UnitType> missingTypes = new HashSet<UnitType>();
+        foreach(var req in nextWave.requiredUnits)
         {
-            foreach (var req in nextWave.requiredUnits)
+            int currentCount = GetMyUnitCount(req.unitType);
+            // 아직 필요량보다 부족하면 Missing 리스트에 추가
+            if (currentCount < req.count) 
             {
-                if (req.unitType == pickedStep.unitType)
-                {
-                    int currentCount = GetMyUnitCount(req.unitType);
-                    if (currentCount <= req.count) isRequiredAndMissing = true;
-                    break;
-                }
+                missingTypes.Add(req.unitType);
             }
         }
 
-        if (!isRequiredAndMissing)
+        // 2. 가중치 증폭 (방금 뽑았더라도, 아직 부족하면 계속 증폭!)
+        // 기존에는 방금 뽑은 유닛(pickedStep)이 Missing에 있으면 증폭을 멈췄으나,
+        // 이제는 '목표 수량'에 도달할 때까지 무조건 가중치를 올립니다.
+        if (missingTypes.Count > 0)
         {
-            HashSet<UnitType> missingTypes = new HashSet<UnitType>();
-            foreach(var req in nextWave.requiredUnits)
+            for (int i = 0; i < runtimeMidGameBuildList.Count; i++)
             {
-                int currentCount = GetMyUnitCount(req.unitType);
-                if (currentCount < req.count) missingTypes.Add(req.unitType);
-            }
-
-            if (missingTypes.Count > 0)
-            {
-                for (int i = 0; i < runtimeMidGameBuildList.Count; i++)
+                BuildStep step = runtimeMidGameBuildList[i];
+                
+                // 이번에 생산할 유닛 타입이 Wave 필수 유닛이라면 가중치 대폭 증가
+                if (step.stepType == BuildStepType.Unit && missingTypes.Contains(step.unitType))
                 {
-                    BuildStep step = runtimeMidGameBuildList[i];
-                    if (step.stepType == BuildStepType.Unit && missingTypes.Contains(step.unitType))
-                    {
-                        step.weight *= 1.25f; 
-                        runtimeMidGameBuildList[i] = step;
-                    }
+                    step.weight *= 1.25f; // 25%씩 계속 증가 (Wave 완료될 때까지)
+                    runtimeMidGameBuildList[i] = step;
                 }
             }
         }

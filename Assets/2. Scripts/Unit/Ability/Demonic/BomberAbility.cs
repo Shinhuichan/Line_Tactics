@@ -1,139 +1,123 @@
 using UnityEngine;
-using System.Collections;
 
 public class BomberAbility : UnitAbility
 {
-    [Header("자폭 설정")]
-    public float explosionRadius = 1.5f;    // 폭발 범위 (몸체보다 약간 크게 설정 추천)
-    public GameObject explosionVFX;         // 폭발 이펙트 프리팹
-    public float explosionDamageMultiplier = 1.0f; // 공격력 대비 폭발 데미지 배율
+    [Header("Bomber Settings")]
+    public float explosionRadius = 3.0f;
+    public float explosionDamage = 50.0f;
+    public GameObject explosionEffectPrefab;
 
-    [Header("업그레이드 키")]
-    public string kamikazeKey = "KAMIKAZE"; // 업그레이드 키
+    [Header("Upgrade Keys")]
+    public string kamikazeKey = "KAMIKAZE"; // ⚡ 복구: 업그레이드 키
 
-    [Header("상태 (Read Only)")]
-    public bool hasExploded = false;        // 중복 폭발 방지
+    private bool isExploded = false; // 💥 중복 폭발 방지용 플래그
 
-    public override void Initialize(UnitController unit)
+    public override void Initialize(UnitController controller)
     {
-        base.Initialize(unit);
-        hasExploded = false; 
+        base.Initialize(controller);
+        isExploded = false; // 초기화
     }
 
-    // 1. 공격 명령이 내려오자마자 즉시 자폭
+    // ⚔️ 공격 시 = 자폭
     public override bool OnAttack(GameObject target)
     {
-        if (hasExploded) return true;
-        
-        // 딜레이 없이 즉시 폭발
-        ExecuteExplosion();
+        if (isExploded) return true;
+
+        Explode();
         return true; 
     }
 
-    // 2. 사망 시 자폭 (기존 유지)
+    // 💀 죽을 때 = 자폭
     public override bool OnDie()
     {
-        if (!hasExploded)
-        {
-            ExecuteExplosion();
-        }
+        if (isExploded) return false;
+
+        Explode();
         return true; 
     }
 
-    // 3. 💥 [신규] 충돌 시 자폭 (몸으로 비빌 때 즉시 폭발)
-    // UnitController가 공격 명령을 내리기 전이라도, 물리적으로 닿으면 터집니다.
+    // 💥 충돌 시 = 자폭
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (hasExploded) return;
+        if (isExploded || owner.isDead) return;
 
-        // 적군 유닛이나 기지와 충돌했는지 확인
-        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("Enemy"))
+        GameObject target = collision.gameObject;
+        // 적 유닛이나 적 기지와 부딪히면 즉시 폭발
+        if (target.CompareTag(owner.enemyTag) || target.CompareTag(owner.targetBaseTag))
         {
-            // 아군은 제외 (자폭병이 아군과 부딪혀서 터지면 안 되므로)
-            if (!collision.gameObject.CompareTag(owner.gameObject.tag))
-            {
-                ExecuteExplosion();
-            }
+            Debug.Log($"{owner.name} collided with {target.name} -> BOOM!");
+            Explode();
         }
     }
 
-    // 🔥 자폭 실행 로직 (공통)
-    void ExecuteExplosion()
+    private void Explode()
     {
-        if (hasExploded) return;
-        hasExploded = true;
+        if (isExploded) return;
+        isExploded = true;
 
-        // 1. 이펙트 생성
-        if (explosionVFX != null)
-        {
-            Instantiate(explosionVFX, transform.position, Quaternion.identity);
-        }
-
-        // 2. 범위 데미지 처리
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
+        SpawnExplosionEffect(); // 🧹 VFX 자동 삭제 포함됨
+        ApplyAreaDamage();      // ⚡ 업그레이드 효과 포함됨
         
-        // 카미카제 업그레이드 확인
+        // 자폭했으므로 유닛 제거
+        owner.FinishDeath();
+    }
+
+    private void ApplyAreaDamage()
+    {
+        // ⚡ [복구] 업그레이드 활성화 여부 확인
         bool isKamikazeActive = false;
         if (UpgradeManager.I != null)
         {
-            isKamikazeActive = UpgradeManager.I.IsAbilityActive(kamikazeKey, owner.gameObject.tag);
+            isKamikazeActive = UpgradeManager.I.IsAbilityActive(kamikazeKey, owner.tag);
         }
 
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
         foreach (var hit in hits)
         {
-            // 자신은 제외
-            if (hit.gameObject == gameObject) continue;
+            // 아군 오폭 방지
+            if (hit.gameObject == owner.gameObject) continue;
+            if (hit.CompareTag(owner.tag) || hit.CompareTag(owner.myBaseTag)) continue;
 
-            // 적군 판별 (기지 포함)
-            bool isEnemy = false;
-            if (owner.CompareTag("Player") && hit.CompareTag("Enemy")) isEnemy = true;
-            else if (owner.CompareTag("Enemy") && hit.CompareTag("Player")) isEnemy = true;
-
-            if (isEnemy)
+            // 1. 유닛 피격 처리
+            UnitController targetUnit = hit.GetComponent<UnitController>();
+            if (targetUnit != null)
             {
-                float finalDamage = owner.attackDamage * explosionDamageMultiplier;
+                targetUnit.TakeDamage(explosionDamage);
 
-                // 유닛 처리
-                UnitController enemyUnit = hit.GetComponent<UnitController>();
-                if (enemyUnit != null)
+                // ⚡ [복구] 업그레이드 시 상태이상 부여 (CC기)
+                if (isKamikazeActive)
                 {
-                    enemyUnit.TakeDamage(finalDamage, false);
+                    targetUnit.ApplyStun(1.0f); // 1초 기절
+                    targetUnit.ApplyBurn();     // 화상 적용
                     
-                    // 카미카제 효과 (스턴 + 넉백)
-                    if (isKamikazeActive)
-                    {
-                        enemyUnit.ApplyStun(1.0f);
-                        enemyUnit.ApplyBurn(); 
-                        
-                        Vector3 knockbackDir = (enemyUnit.transform.position - transform.position).normalized;
-                        if (knockbackDir == Vector3.zero) knockbackDir = Random.insideUnitCircle.normalized;
-                        enemyUnit.ApplyKnockback(knockbackDir, 5.0f);
-                    }
+                    // 넉백 방향 계산 (폭발 중심에서 바깥으로)
+                    Vector3 knockbackDir = (targetUnit.transform.position - transform.position).normalized;
+                    if (knockbackDir == Vector3.zero) knockbackDir = Random.insideUnitCircle.normalized;
+                    
+                    targetUnit.ApplyKnockback(knockbackDir, 2.5f); // 넉백
                 }
-                // 기지 처리
-                else
-                {
-                    BaseController enemyBase = hit.GetComponent<BaseController>();
-                    if (enemyBase != null)
-                    {
-                        // 기지에는 보통 더 큰 피해를 주거나 그대로 줌
-                        enemyBase.TakeDamage(finalDamage);
-                        if (FloatingTextManager.I != null)
-                            FloatingTextManager.I.ShowText(enemyBase.transform.position, "Siege Dmg!", Color.yellow, 30);
-                    }
-                }
+                continue;
             }
-        }
 
-        // 3. 자폭병 사망 처리 (즉시 제거)
-        // OnDie 루프 방지를 위해 상태를 먼저 변경했으므로 안전함
-        if (owner != null)
-        {
-            owner.currentHP = 0;
-            owner.FinishDeath(); // UnitController의 사망 처리 호출
+            // 2. 기지 피격 처리
+            BaseController targetBase = hit.GetComponent<BaseController>();
+            if (targetBase != null)
+            {
+                targetBase.TakeDamage(explosionDamage);
+            }
         }
     }
 
+    private void SpawnExplosionEffect()
+    {
+        if (explosionEffectPrefab != null)
+        {
+            GameObject vfx = Instantiate(explosionEffectPrefab, transform.position, Quaternion.identity);
+            // ✨ [유지] 맵 더러워짐 방지: 2초 후 자동 삭제
+            Destroy(vfx, 2.0f);
+        }
+    }
+    
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

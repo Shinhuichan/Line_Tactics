@@ -16,15 +16,15 @@ MonoBehaviour:
   upgradeName: "\uAC70\uB300\uD654 I"
   icon: {fileID: 0}
   description: "\uAC70\uC778\uBCD1\uC774 \uAC70\uB300\uD574\uC9D1\uB2C8\uB2E4."
-  ironCost: 300
+  raceRequirement: 1
+  isCommonUpgrade: 0
+  ironCost: 200
   oilCost: 50
   researchTime: 0
   preRequisites: []
   targetType: 3
   specificUnit: 111
   effectType: 1
+  specialAbilityKey: GIANT_GROWTH_1
   statType: 0
   value: 0
-  specialAbilityKey: GIANT_GROWTH_1
-  isCommonUpgrade: 0
-  raceRequirement: 1

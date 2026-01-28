@@ -2705,6 +2705,56 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 357119303}
   m_CullTransparentMesh: 1
+--- !u!1 &364026608
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 364026610}
+  - component: {fileID: 364026609}
+  m_Layer: 0
+  m_Name: BotStateVisualizer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &364026609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 364026608}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 567fc48dfc646ae4e88d3e98931e1890, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BotStateVisualizer
+  showDebugInfo: 1
+  playerColor: {r: 0.2, g: 0.2, b: 1, a: 0.8}
+  enemyColor: {r: 1, g: 0.2, b: 0.2, a: 0.8}
+  fontSize: 24
+  boxWidth: 360
+  verticalSpacing: 360
+--- !u!4 &364026610
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 364026608}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &366254544
 GameObject:
   m_ObjectHideFlags: 0
@@ -7730,6 +7780,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6e1975de37cf714dbe84ceea0477ce0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerTacticsManager
+  playerFrontLinePos: {x: 0, y: 0, z: 0}
+  currentFrontBase: {fileID: 0}
 --- !u!114 &956554254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17117,7 +17169,6 @@ GameObject:
   - component: {fileID: 2044621152}
   - component: {fileID: 2044621157}
   - component: {fileID: 2044621156}
-  - component: {fileID: 2044621158}
   - component: {fileID: 2044621155}
   m_Layer: 0
   m_Name: EnemyBot
@@ -17240,20 +17291,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyProductionManager
   currentGoalDebug: None
   missingResourceDebug: None
---- !u!114 &2044621158
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2044621151}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 567fc48dfc646ae4e88d3e98931e1890, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BotStateVisualizer
-  showGizmos: 1
-  textOffset: {x: 0, y: 3, z: 0}
 --- !u!1 &2062894719
 GameObject:
   m_ObjectHideFlags: 0
@@ -21673,6 +21710,7 @@ SceneRoots:
   - {fileID: 772004081}
   - {fileID: 1673612883}
   - {fileID: 184947467}
+  - {fileID: 364026610}
   - {fileID: 2044621154}
   - {fileID: 956554251}
   - {fileID: 1109189478}
