@@ -18,13 +18,15 @@ MonoBehaviour:
   description: "\uB300\uAC80\uBCD1\uC774 \uCCB4\uB825\uC744 \uC18C\uBAA8\uD558\uC5EC
     \uC804\uD22C \uB2A5\uB825\uC744 \uB300\uD3ED \uAC15\uD654\uD569\uB2C8\uB2E4.\\n(\uC870\uAC74:
     \uCCB4\uB825 25% \uC774\uC0C1 + \uC801 \uBC1C\uACAC)"
-  ironCost: 75
-  oilCost: 50
+  raceRequirement: 0
+  isCommonUpgrade: 0
+  ironCost: 100
+  oilCost: 75
   researchTime: 5
   preRequisites: []
   targetType: 3
   specificUnit: 0
   effectType: 1
+  specialAbilityKey: FURY
   statType: 0
   value: 0
-  specialAbilityKey: FURY

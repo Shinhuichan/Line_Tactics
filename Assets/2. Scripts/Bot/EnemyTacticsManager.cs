@@ -7,6 +7,10 @@ public class EnemyTacticsManager : MonoBehaviour
     private float tacticsTimer = 0f;
     private float siegeCooldown = 0f;
 
+    // 🏳️ [신규] 후퇴 판단용 변수
+    private float initialWavePower = 0f;      // 공격 시작 시점의 아군 총 전력
+    private float currentRetreatThreshold = 0f; // 현재 웨이브의 후퇴 임계값 (0~1)
+
     // 🌟 [수정] 자체 변수 대신 EnemyCommandManager 참조 (PlayerBot 구조와 통일)
     // 외부(EnemyBot 등)에서 currentState를 참조해도 문제 없도록 프로퍼티로 연결
     public TacticalState currentState
@@ -163,7 +167,6 @@ public class EnemyTacticsManager : MonoBehaviour
         if (wave.requiredPowerRatio > 0)
         {
             // 🌟 [수정] 적 전력이 0이면 (전멸 혹은 극초반) 무조건 공격 가능 (Infinite Ratio)
-            // 기존: if (enemyPower <= 0) return false; (공격 불가) -> 수정됨
             if (brain.scout.enemyTotalPower > 0)
             {
                 float myPower = CalculateMyCombatPower();
@@ -171,8 +174,11 @@ public class EnemyTacticsManager : MonoBehaviour
 
                 if (ratio < wave.requiredPowerRatio) return false; 
             }
-            // else: 적 전력이 0이면 통과 (공격 감행)
         }
+
+        // 🏳️ [신규] 공격 시작 전, 현재 전력과 후퇴 기준 저장
+        initialWavePower = CalculateMyCombatPower();
+        currentRetreatThreshold = wave.retreatThreshold;
 
         LaunchAllOutAttack();
         return true;
@@ -180,7 +186,7 @@ public class EnemyTacticsManager : MonoBehaviour
 
     void LaunchAllOutAttack()
     {
-        Debug.Log("⚔️ [EnemyBot] All-Out Attack Triggered!");
+        Debug.Log($"⚔️ [EnemyBot] All-Out Attack Triggered! (Initial Power: {initialWavePower:F1}, Retreat At: {currentRetreatThreshold * 100}%)");
         
         // 🌟 [수정] CommandManager를 통해 상태 변경
         if (EnemyCommandManager.I != null)
@@ -206,12 +212,18 @@ public class EnemyTacticsManager : MonoBehaviour
 
         if (current == TacticalState.Attack)
         {
-            float myPower = CalculateMyCombatPower();
+            float currentPower = CalculateMyCombatPower();
             
-            // 🌟 [수정] 후퇴 임계점 완화 (100 -> 20)
-            // 공격을 시작했는데 병력이 100 이하면 바로 후퇴하는 문제 해결
-            if (myPower < 20f) 
+            // 🏳️ [신규] 전력 손실 비율 계산 및 후퇴 판단
+            // 초기 전력이 0이었다면(오류 등) 0으로 처리, 아니면 현재 비율 계산
+            float powerRatio = (initialWavePower > 0) ? (currentPower / initialWavePower) : 0f;
+
+            // 현재 전력 비율이 설정된 임계값 이하라면 후퇴 (예: 100으로 시작, 0.5 설정 시 50 되면 후퇴)
+            // 단, 전력이 아예 없으면(0) 무조건 후퇴
+            if (currentPower <= 0 || powerRatio <= currentRetreatThreshold)
             {
+                 Debug.Log($"🏳️ [EnemyBot] Retreating! Power dropped to {powerRatio * 100:F1}% (Threshold: {currentRetreatThreshold * 100}%)");
+                 
                  if (EnemyCommandManager.I != null)
                     EnemyCommandManager.I.SetState(TacticalState.Defend);
             }

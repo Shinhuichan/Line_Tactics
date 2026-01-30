@@ -547,12 +547,14 @@ public class WorkerAbility : UnitAbility
              FloatingTextManager.I.ShowText(transform.position, $"+{currentLoad}", Color.cyan, 20);
     }
 
+    // 🌟 [핵심 수정] 자원 채집 명령 설정
     public void SetStateToMine(ResourceType type)
     {
         if (currentState == WorkerState.Building) return;
 
         owner.isManualMove = true;
 
+        // 1. 이미 자원을 들고 있는데 다른 자원을 캐라고 할 경우 처리
         if (currentLoad > 0)
         {
             if (heldResourceType != type)
@@ -571,16 +573,31 @@ public class WorkerAbility : UnitAbility
 
         if (assignedBase == null) { SetStateToIdle(); return; }
 
-        // 1. 기지 주변 검색
+        // 2. 현재 소속 기지 주변 검색 (Local Search)
         ResourceNode node = assignedBase.GetAvailableResource(type);
 
-        // 2. [강력한 보정] 기지 검색 실패 시, 현재 위치에서 전역 검색 (Outpost 건설 직후 등)
+        // 3. [수정] 기지 주변에 없다면 전역 검색 (Global Search)
         if (node == null)
         {
-            FindNearestResourceGlobal(); // targetNodeTransform 갱신
-            if (targetNodeTransform != null) node = targetNodeScript;
+            FindNearestResourceGlobal(); // targetNodeTransform이 갱신됨
+            
+            // 전역 검색으로 자원을 찾았다면?
+            if (targetNodeTransform != null) 
+            {
+                node = targetNodeScript;
+
+                // 🌟 [신규 로직] 발견한 자원이 현재 기지보다 다른 기지와 더 가깝다면 이주(Transfer)한다!
+                BaseController nearestBaseToResource = BaseController.FindNearestConstructedBase(targetNodeTransform.position, owner.tag);
+
+                if (nearestBaseToResource != null && nearestBaseToResource != assignedBase)
+                {
+                    Debug.Log($"🔄 [Worker] {name}: Resource found far away. Relocating from {assignedBase.name} to {nearestBaseToResource.name} to mine efficiently.");
+                    TransferBase(nearestBaseToResource);
+                }
+            }
         }
 
+        // 최종적으로 자원이 있는지 확인
         if (node != null)
         {
             targetNodeTransform = node.transform;
@@ -590,7 +607,7 @@ public class WorkerAbility : UnitAbility
         }
         else
         {
-            // 진짜 없으면 포기
+            // 진짜 맵 전체에 자원이 없으면 스마트 이주 시도 또는 Idle
             AttemptFindNewResourceOrMigrate();
         }
     }

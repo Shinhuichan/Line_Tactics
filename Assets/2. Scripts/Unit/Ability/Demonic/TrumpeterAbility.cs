@@ -7,9 +7,8 @@ public class TrumpeterAbility : UnitAbility
     public float buffDuration = 3.0f;
     
     [Header("업그레이드: 살육의 나팔")]
-    public string slaughterUpgradeKey = "SLAUGHTER_HORN"; // 🌟 업그레이드 키
+    public string slaughterUpgradeKey = "SLAUGHTER_HORN"; 
     
-    // 공격 속도(AttackCooldown)를 버프 주기로 사용
     private float buffCooldownTimer = 0f;
 
     [Header("이펙트")]
@@ -22,15 +21,13 @@ public class TrumpeterAbility : UnitAbility
 
     public override void OnUpdate()
     {
-        // 쿨타임 관리
         if (buffCooldownTimer > 0) buffCooldownTimer -= Time.deltaTime;
 
-        // 쿨타임이 돌았으면 버프 대상 탐색
         if (buffCooldownTimer <= 0)
         {
             if (TryBuffAlly())
             {
-                buffCooldownTimer = owner.attackCooldown; // 버프 성공 시 쿨타임 적용
+                buffCooldownTimer = owner.attackCooldown; 
             }
         }
     }
@@ -50,8 +47,14 @@ public class TrumpeterAbility : UnitAbility
                 UnitController ally = col.GetComponent<UnitController>();
                 if (ally == null || ally.isDead) continue;
 
-                // 2. 건물 제외 (기획에 따라 포함 가능하나 보통 유닛에게 줌)
+                // 2. 건물 제외 (성채 유닛 등 기본 제외)
                 if (ally.IsStaticUnit) continue; 
+
+                // 🚫 [수정] 나팔병 자신, 노동병, 노예병, 그리고 "성채 시체병"은 버프 대상에서 아예 제외
+                // (IsStaticUnit에 포함되어 있지만 이중 안전장치로 명시적 제외)
+                if (ally.unitType == UnitType.Trumpeter) continue;
+                if (ally.unitType == UnitType.Worker || ally.unitType == UnitType.Slave) continue;
+                if (ally.unitType == UnitType.BaseCorpse) continue; // 🌟 추가됨
 
                 // 3. 점수 계산 (우선순위)
                 int score = CalculatePriorityScore(ally);
@@ -66,17 +69,14 @@ public class TrumpeterAbility : UnitAbility
         // 타겟이 있으면 버프 실행
         if (bestTarget != null)
         {
-            // 🩸 업그레이드 확인
             bool isSlaughter = false;
             if (UpgradeManager.I != null)
             {
                 isSlaughter = UpgradeManager.I.IsAbilityActive(slaughterUpgradeKey, owner.tag);
             }
 
-            // 버프 적용 (공격력 증가량은 buffAmount 사용, 살육 모드 전달)
             bestTarget.ApplyTrumpeterBuff(buffAmount, buffDuration, isSlaughter);
             
-            // 연출
             if (buffEffect != null)
                 Instantiate(buffEffect, transform.position, Quaternion.identity, transform);
             
@@ -86,16 +86,11 @@ public class TrumpeterAbility : UnitAbility
         return false;
     }
 
-    // 📊 우선순위 점수 계산표 (기존 유지)
+    // 📊 우선순위 점수 계산표
     int CalculatePriorityScore(UnitController unit)
     {
-        // 이미 버프가 있으면 후순위
         if (unit.HasTrumpeterBuff) return 10; 
-
-        // 효율 낮은 유닛 (일꾼 등)
         if (IsLowPriorityUnit(unit.unitType)) return 1;
-
-        // 일반 전투 유닛
         return 100;
     }
 
@@ -103,7 +98,6 @@ public class TrumpeterAbility : UnitAbility
     {
         switch (type)
         {
-            case UnitType.Worker:
             case UnitType.Healer:
             case UnitType.FlagBearer:
             case UnitType.Bomber: 

@@ -108,6 +108,7 @@ MonoBehaviour:
       count: 10
     - unitType: 101
       count: 4
+    retreatThreshold: 0.5
   - timing: 360
     requiredPowerRatio: 0
     requiredUnits:
@@ -117,5 +118,6 @@ MonoBehaviour:
       count: 4
     - unitType: 110
       count: 2
+    retreatThreshold: 0.5
   idealWorkerCount: 7
   expansionPolicy: 1

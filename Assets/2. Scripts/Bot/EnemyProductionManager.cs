@@ -168,6 +168,7 @@ public class EnemyProductionManager : MonoBehaviour
             {
                 if (nextStep.upgradeData != null)
                 {
+                    // 1. 이미 완료했거나 연구 중이면 패스
                     if (UpgradeManager.I.IsUnlocked(nextStep.upgradeData, teamTag) ||
                         UpgradeManager.I.IsResearching(nextStep.upgradeData, teamTag))
                     {
@@ -175,13 +176,20 @@ public class EnemyProductionManager : MonoBehaviour
                         return;
                     }
 
+                    // 🛑 [수정] 선행 연구 미충족 시 큐에서 제거 (PlayerBot과 동일 로직)
+                    // 기존에는 이 체크가 없어서 큐가 막히거나 순서가 꼬임
+                    if (!UpgradeManager.I.IsResearchable(nextStep.upgradeData, teamTag))
+                    {
+                         buildQueue.Dequeue(); 
+                         return;
+                    }
+
+                    // 2. 자원 확인 및 구매
                     if (EnemyResourceManager.I.CheckCost(nextStep.upgradeData.ironCost, nextStep.upgradeData.oilCost))
                     {
-                        if (UpgradeManager.I.IsResearchable(nextStep.upgradeData, teamTag))
-                        {
-                            UpgradeManager.I.PurchaseUpgrade(nextStep.upgradeData, teamTag);
-                            isSuccess = true;
-                        }
+                        // 위에서 IsResearchable을 확인했으므로 바로 구매
+                        UpgradeManager.I.PurchaseUpgrade(nextStep.upgradeData, teamTag);
+                        isSuccess = true;
                     }
                 }
                 else
@@ -207,7 +215,7 @@ public class EnemyProductionManager : MonoBehaviour
                         if (built) 
                         {
                             isSuccess = true;
-                            // 🌟 [핵심 수정] 확장 성공 시 즉시 전술 업데이트 (PlayerBot과 동일)
+                            // 🌟 확장 성공 시 전술 업데이트
                             if (brain.tactics != null)
                             {
                                 brain.tactics.ForceUpdateFrontline();
@@ -227,6 +235,7 @@ public class EnemyProductionManager : MonoBehaviour
             }
         }
 
+        // ... (이하 일꾼 자동 생산 로직 기존과 동일) ...
         if (brain.IsOpeningFinished && NeedMoreWorkers())
         {
             UnitData workerData = SpawnManager.I.GetUnitDataByType((UnitType)myWorkerId);

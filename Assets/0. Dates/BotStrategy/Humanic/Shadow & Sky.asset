@@ -53,7 +53,7 @@ MonoBehaviour:
     unitType: 4
     count: 1
     upgradeData: {fileID: 0}
-    weight: 25
+    weight: 30
   - stepType: 0
     unitType: 9
     count: 2
@@ -64,6 +64,11 @@ MonoBehaviour:
     count: 1
     upgradeData: {fileID: 0}
     weight: 10
+  - stepType: 0
+    unitType: 1
+    count: 1
+    upgradeData: {fileID: 0}
+    weight: 5
   - stepType: 1
     unitType: 7
     count: 1
@@ -84,6 +89,7 @@ MonoBehaviour:
       count: 2
     - unitType: 9
       count: 3
+    retreatThreshold: 0
   - timing: 360
     requiredPowerRatio: 0
     requiredUnits:
@@ -91,6 +97,7 @@ MonoBehaviour:
       count: 3
     - unitType: 9
       count: 5
+    retreatThreshold: 0.5
   - timing: 480
     requiredPowerRatio: 0
     requiredUnits:
@@ -98,5 +105,8 @@ MonoBehaviour:
       count: 4
     - unitType: 9
       count: 7
+    - unitType: 1
+      count: 2
+    retreatThreshold: 0.5
   idealWorkerCount: 8
   expansionPolicy: 1

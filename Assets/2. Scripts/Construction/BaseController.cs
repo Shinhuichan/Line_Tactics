@@ -421,6 +421,28 @@ public class BaseController : MonoBehaviour
         return bestNode;
     }
 
+    // 🌟 [신규 추가] 특정 위치(targetPos)에서 가장 가까운 건설 완료된 아군 기지를 찾는 함수
+    public static BaseController FindNearestConstructedBase(Vector3 targetPos, string teamTag)
+    {
+        BaseController bestBase = null;
+        float minDst = Mathf.Infinity;
+
+        foreach (var baseCtrl in activeBases)
+        {
+            if (baseCtrl == null) continue;
+            if (!baseCtrl.isConstructed) continue; // 건설 중인 기지는 제외
+            if (!baseCtrl.CompareTag(teamTag)) continue;
+
+            float dst = Vector3.Distance(targetPos, baseCtrl.transform.position);
+            if (dst < minDst)
+            {
+                minDst = dst;
+                bestBase = baseCtrl;
+            }
+        }
+        return bestBase;
+    }
+
     private void OnMouseEnter()
     {
         if (UnitInfoPanel.I != null && icon != null)

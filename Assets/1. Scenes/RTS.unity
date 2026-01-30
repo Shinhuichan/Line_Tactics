@@ -7764,7 +7764,7 @@ MonoBehaviour:
   activeStrategy: {fileID: 0}
   myTeamTag: Player
   useDebugOverrides: 1
-  debugRaceOverride: 1
+  debugRaceOverride: 0
   forceSpecificStrategy: {fileID: 0}
   currentWaveIndex: 0
   gameTime: 0
@@ -17208,7 +17208,7 @@ MonoBehaviour:
   responsiveness: 0
   myTeamTag: Enemy
   useDebugOverrides: 1
-  debugRaceOverride: 0
+  debugRaceOverride: 1
   forceSpecificStrategy: {fileID: 0}
   currentWaveIndex: 0
   gameTime: 0
@@ -17258,8 +17258,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef434b642dbfb3546a1dd3514861adb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyTacticsManager
-  currentState: 0
   enemyFrontLinePos: {x: 0, y: 0, z: 0}
+  currentFrontBase: {fileID: 0}
 --- !u!114 &2044621156
 MonoBehaviour:
   m_ObjectHideFlags: 0

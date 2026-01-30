@@ -43,8 +43,14 @@ public class EnemyBot : MonoBehaviour
     [HideInInspector] public float gameTime = 0f;
 
     private static EnemyBot _instance;
+
     // 🌟 [수정] EnemyCommandManager를 통해 상태 반환
     public static TacticalState enemyState => (_instance && _instance.tactics) ? _instance.tactics.currentState : TacticalState.Defend;
+    
+    // ⚔️ [수정] 전선 위치 뿐만 아니라, "현재 집결해야 할 기지 객체" 자체를 반환
+    // 이것이 Player의 TacticalCommandManager.currentRallyPoint와 같은 역할을 합니다.
+    public static BaseController enemyFrontLineBase => (_instance && _instance.tactics) ? _instance.tactics.currentFrontBase : null;
+    
     public static Vector3 enemyFrontLinePos => (_instance && _instance.tactics) ? _instance.tactics.enemyFrontLinePos : Vector3.zero;
     
     public BotStrategyData Strategy => activeStrategy;
@@ -57,7 +63,6 @@ public class EnemyBot : MonoBehaviour
         tactics = GetComponent<EnemyTacticsManager>();
         scout = GetComponent<EnemyScoutManager>();
 
-        // 🌟 [신규] 구조 통합: EnemyCommandManager가 없으면 추가
         if (EnemyCommandManager.I == null)
         {
             if (GetComponent<EnemyCommandManager>() == null)
@@ -67,6 +72,7 @@ public class EnemyBot : MonoBehaviour
         }
     }
 
+    // (이하 Start, InitializeStrategy, Update 등 기존 로직 동일 유지)
     void Start()
     {
         InitializeStrategy();
@@ -181,7 +187,7 @@ public class EnemyBot : MonoBehaviour
 
                     if (newBase != null && newBase != worker.assignedBase)
                     {
-                        Debug.Log($"🤖 [EnemyBot] Idle Worker ({unit.name}) detected! Relocating to {newBase.name} for {worker.targetResourceType}.");
+                        // Debug.Log 삭제 또는 유지
                         worker.TransferBase(newBase);
                         worker.SetStateToMine(worker.targetResourceType);
                     }
@@ -245,7 +251,7 @@ public class EnemyBot : MonoBehaviour
             if (tactics.TryTriggerWave(nextWave))
             {
                 currentWaveIndex++;
-                InitializeRuntimeBuildList(); // 🌟 Wave 완료 시 가중치 초기화
+                InitializeRuntimeBuildList(); 
             }
         }
     }
@@ -275,7 +281,6 @@ public class EnemyBot : MonoBehaviour
             else if (production.GetQueueCount() == 0)
             {
                 isOpeningFinished = true;
-                Debug.Log("🤖 EnemyBot: Opening Finished. Switching to Macro Mode.");
                 InitializeRuntimeBuildList();
             }
         }
@@ -295,15 +300,13 @@ public class EnemyBot : MonoBehaviour
                 {
                     if (ConstructionManager.I.HasFreeSpot())
                     {
-                        Debug.Log("🤖 [EnemyBot] Critical Economy! Forcing Expansion (Last Stand).");
                         production.ClearQueue();
                         BuildStep expansionStep = new BuildStep { stepType = BuildStepType.Expansion, weight = 1000f };
                         production.EnqueueStep(expansionStep);
                     }
                     else
                     {
-                        Debug.Log("🤖 [EnemyBot] No Land Left! All-In Attack Triggered!");
-                        tactics.TryTriggerWave(new AttackWave()); // Force Attack
+                        tactics.TryTriggerWave(new AttackWave()); 
                     }
                     return; 
                 }
@@ -313,8 +316,6 @@ public class EnemyBot : MonoBehaviour
                 candidates.Add(new BuildStep { stepType = BuildStepType.Expansion, weight = expansionWeight });
 
                 BuildStep pickedStep = GetWeightedRandomStep(candidates);
-                
-                // 🌟 [수정] Wave에 필요한 유닛이면 가중치를 계속 증폭 (Reset 방지)
                 UpdateWeightsForNextWave(pickedStep);
 
                 if (pickedStep.stepType == BuildStepType.Unit)
@@ -346,7 +347,6 @@ public class EnemyBot : MonoBehaviour
         return Mathf.Max(1f, weight); 
     }
 
-    // 🌟 [핵심 수정] Wave 필요 유닛의 가중치를 증폭시키는 로직 개선
     void UpdateWeightsForNextWave(BuildStep pickedStep)
     {
         if (pickedStep.stepType == BuildStepType.Expansion) return; 
@@ -354,31 +354,21 @@ public class EnemyBot : MonoBehaviour
         if (currentWaveIndex >= activeStrategy.attackWaves.Count) return;
         AttackWave nextWave = activeStrategy.attackWaves[currentWaveIndex];
         
-        // 1. 필요한 유닛 목록 확인
         HashSet<UnitType> missingTypes = new HashSet<UnitType>();
         foreach(var req in nextWave.requiredUnits)
         {
             int currentCount = GetMyUnitCount(req.unitType);
-            // 아직 필요량보다 부족하면 Missing 리스트에 추가
-            if (currentCount < req.count) 
-            {
-                missingTypes.Add(req.unitType);
-            }
+            if (currentCount < req.count) missingTypes.Add(req.unitType);
         }
 
-        // 2. 가중치 증폭 (방금 뽑았더라도, 아직 부족하면 계속 증폭!)
-        // 기존에는 방금 뽑은 유닛(pickedStep)이 Missing에 있으면 증폭을 멈췄으나,
-        // 이제는 '목표 수량'에 도달할 때까지 무조건 가중치를 올립니다.
         if (missingTypes.Count > 0)
         {
             for (int i = 0; i < runtimeMidGameBuildList.Count; i++)
             {
                 BuildStep step = runtimeMidGameBuildList[i];
-                
-                // 이번에 생산할 유닛 타입이 Wave 필수 유닛이라면 가중치 대폭 증가
                 if (step.stepType == BuildStepType.Unit && missingTypes.Contains(step.unitType))
                 {
-                    step.weight *= 1.25f; // 25%씩 계속 증가 (Wave 완료될 때까지)
+                    step.weight *= 1.25f; 
                     runtimeMidGameBuildList[i] = step;
                 }
             }

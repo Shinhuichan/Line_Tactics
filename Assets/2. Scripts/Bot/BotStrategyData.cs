@@ -23,7 +23,6 @@ public struct BuildStep
     public UpgradeData upgradeData;
 
     // ⚖️ [신규] 생산 가중치 (기본값 10)
-    // 숫자가 높을수록 중반 운영(Mid-Game)에서 더 자주 선택됩니다.
     [Range(1, 100)]
     [Tooltip("중반 랜덤 생산 시 선택될 확률 가중치입니다. (높을수록 자주 생산)")]
     public float weight; 
@@ -35,6 +34,14 @@ public struct AttackWave
     public float timing;
     public float requiredPowerRatio;
     public List<UnitCountPair> requiredUnits;
+
+    // 🏳️ [신규] 후퇴 임계점 (0.0 ~ 1.0)
+    // 0.0: 전멸할 때까지 싸움 (Power <= 0)
+    // 0.5: 전력이 절반으로 줄어들면 후퇴
+    // 0.8: 전력이 20%만 줄어들어도 바로 후퇴 (치고 빠지기)
+    [Range(0f, 1f)]
+    [Tooltip("전투 시작 시점 대비 현재 전력이 이 비율 이하로 떨어지면 후퇴합니다. (0=전멸시까지, 1=즉시후퇴)")]
+    public float retreatThreshold; 
 }
 
 [System.Serializable]

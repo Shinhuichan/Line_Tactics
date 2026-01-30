@@ -381,6 +381,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d773a5648fedb584bba22b6dac01d85a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SwordsmanAbility
+  owner: {fileID: 0}
   ignoreDefense: 1
   furyUpgradeKey: FURY
   furyThresholdRatio: 0.25

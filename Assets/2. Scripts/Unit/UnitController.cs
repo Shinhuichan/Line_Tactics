@@ -356,11 +356,19 @@ public class UnitController : MonoBehaviour
         this.isDead = false;
         InitUI(); // UI 슬라이더 연결
 
+        // 🛑 [버그 수정] Ability 초기화 전에 현재 스탯에 기본값을 채워넣습니다.
+        // 이유: CavalryAbility 등이 Initialize 시점에 owner.moveSpeed를 캐싱하는데,
+        // 이때 값이 0이면 돌진 속도도 0이 되어 움직이지 않는 버그가 발생함.
+        this.moveSpeed = this.baseMoveSpeed;
+        this.attackDamage = this.baseAttackDamage;
+        this.maxHP = this.baseMaxHP; // RecalculateStats에서 다시 덮어씌워지므로 안전함
+
         // 🛠️ [핵심 수정 1] Ability 초기화를 스탯 계산보다 '먼저' 해야 함!
         // 그래야 GiantAbility가 owner를 알고 있는 상태에서 UpdateGiantStats를 수행할 수 있음.
         if (myAbility != null) myAbility.Initialize(this);
 
         // 스탯 계산 (이제 Ability가 owner를 아는 상태이므로 안전함)
+        // 여기서 실제 업그레이드 등이 반영된 최종 스탯이 계산됨
         RecalculateStats();
         
         // 초기화 시점에는 체력을 가득 채움 (RecalculateStats 이후에 설정)
@@ -1449,7 +1457,7 @@ public class UnitController : MonoBehaviour
         }
 
         // --------------------------------------------------------
-        // 🤖 적군(AI) 로직
+        // 🤖 적군(AI) 로직 - 🌟 [핵심 수정: Player의 RallyPoint 시스템과 동일화]
         // --------------------------------------------------------
         if (gameObject.CompareTag("Enemy"))
         {
@@ -1459,46 +1467,55 @@ public class UnitController : MonoBehaviour
             }
             else if (EnemyBot.enemyState == TacticalState.Siege) 
             {
+                // 적군 전선(최전방 기지) 근처라면 Garrison 진입 시도
                 float distToFront = Vector3.Distance(transform.position, EnemyBot.enemyFrontLinePos);
                 
                 if (distToFront < 20.0f)
                 {
-                    // 🌟 [수정] 숨는 로직 호출 (Enemy)
                     TryEnterGarrison(EnemyBot.enemyFrontLinePos); 
                 }
                 else
                 {
-                    MoveToBase(); 
+                    // 전선이 멀면 일단 그쪽으로 이동
+                    BaseController frontBase = EnemyBot.enemyFrontLineBase;
+                    if (frontBase != null) MoveToRallyPoint(frontBase.transform);
+                    else MoveToBase(); // fallback
                 }
             }
-            else // Defend
+            else // Defend (기본 상태)
             {
                 if (CheckIntercept()) return; 
-                MoveToBase(); 
+
+                // 🛑 [수정] 기존 MoveToBase() 제거 -> TacticsManager가 찍어준 전선 기지로 집결
+                // 건설 중인 Outpost도 TacticsManager가 frontBase로 지정하므로, 모든 유닛이 거기로 몰려갑니다.
+                BaseController targetBase = EnemyBot.enemyFrontLineBase;
+                if (targetBase != null)
+                {
+                    MoveToRallyPoint(targetBase.transform);
+                }
+                else
+                {
+                    // 만약 전선 기지가 없다면(파괴됨 등), 기존 로직대로 가장 가까운 기지로
+                    MoveToBase(); 
+                }
             }
             return;
         }
 
-        // 4. 아군(Player) 전술 로직
+        /// --------------------------------------------------------
+        // 👤 아군(Player) 전술 로직
+        // --------------------------------------------------------
         if (TacticalCommandManager.I == null) { MoveToEnemy(); return; }
         Transform rallyPoint = TacticalCommandManager.I.currentRallyPoint;
         if (rallyPoint == null) return;
 
-        // 🛑 [핵심 수정] 농성(Siege) 모드 처리 (최우선 순위)
+        // 1. 농성(Siege) 우선 처리 (기존 유지)
         if (isSiege)
         {
             float distToRally = Vector3.Distance(transform.position, rallyPoint.position);
-            
-            // 집결지(건물) 근처 20m 이내에 있다면?
             if (distToRally < 20.0f)
             {
-                // 🌟 [수정] 건물 안으로 들어가서 비활성화 시도
-                if (TryEnterGarrison(rallyPoint.position, rallyPoint)) 
-                {
-                    return; // 들어갔으면 종료
-                }
-                
-                // 아직 못 들어갔으면 계속 안으로 이동
+                if (TryEnterGarrison(rallyPoint.position, rallyPoint)) return; 
                 MoveToHideInPoint(rallyPoint.position);
                 return; 
             }
@@ -1509,9 +1526,15 @@ public class UnitController : MonoBehaviour
             }
         }
 
-        // --- 아래는 농성 모드가 아닐 때(Defend/Attack)만 실행됨 ---
+        // 2. [추가] 공격(Attack) 상태일 때 전역 추적 로직 추가
+        // PlayerBot이 웨이브를 발동하여 상태를 Attack으로 바꾸면, 집결지를 무시하고 적을 찾아 진격합니다.
+        if (TacticalCommandManager.I.currentState == TacticalState.Attack)
+        {
+            MoveToEnemy(); // 전역에서 가장 가까운 적을 찾아 이동
+            return;
+        }
 
-        // 5. 적 감지 및 추적 (농성 때는 실행 안 됨!)
+        // 3. 방어(Defend) 상태일 때 감지 범위 내 교전 (기존 유지)
         if (HasEnemyInDetectRange()) 
         {
             GameObject target = FindEnemyInDetectRange();
@@ -1523,7 +1546,7 @@ public class UnitController : MonoBehaviour
             return; 
         }
 
-        // 6. 일반 이동 (진형 유지)
+        // 4. 일반 이동 (진형 유지) - Defend 상태일 때 적용됨 (기존 유지)
         MoveToRallyPoint(rallyPoint);
     }
 
@@ -1892,7 +1915,7 @@ public class UnitController : MonoBehaviour
         return bestBase;
     }
 
-    // 🚑 [수정] 아군 찾기 로직 강화 (전투 유닛 우선, 치유병 후순위)
+    // 🚑 [수정] 아군 찾기 로직 강화 (나팔병은 나팔병/노동병/성채시체병 무시)
     GameObject FindNearestAlly()
     {
         GameObject[] allies = GameObject.FindGameObjectsWithTag(gameObject.tag);
@@ -1913,10 +1936,19 @@ public class UnitController : MonoBehaviour
             UnitController allyUnit = ally.GetComponent<UnitController>();
             if (allyUnit == null) continue;
 
-            // 🛑 [수정] 고정형 유닛(건물 취급)은 따라가지 않음
+            // 🛑 고정형 유닛(건물 취급)은 따라가지 않음 (기본 로직)
             if (allyUnit.IsStaticUnit) continue;
 
+            // 기존 노동병 수동 이동 체크 로직 유지
             if (allyUnit.unitType == UnitType.Worker && allyUnit.isManualMove) continue;
+
+            // 🚫 [신규] 내가 나팔병(Trumpeter)이라면, 불필요한 대상을 따라가지 않음
+            if (this.unitType == UnitType.Trumpeter)
+            {
+                if (allyUnit.unitType == UnitType.Trumpeter) continue;
+                if (allyUnit.unitType == UnitType.Worker || allyUnit.unitType == UnitType.Slave) continue;
+                if (allyUnit.unitType == UnitType.BaseCorpse) continue; // 🌟 추가됨
+            }
 
             float distSqr = (ally.transform.position - currentPos).sqrMagnitude;
 
@@ -2298,13 +2330,19 @@ public class UnitController : MonoBehaviour
     // ==================================================================================
     // 🖱️ [신규] 유닛 호버 기능 구현 (Collider2D가 있어야 작동함 - 이미 있음)
     // ==================================================================================
+    // 🌟 [추가] UnitInfoPanel에서 원본 데이터(이름, 아이콘 등)에 접근하기 위한 프로퍼티
+    public UnitData LinkedData => _linkedData;
+
+    // ==================================================================================
+    // 🖱️ [수정] 유닛 호버 기능 구현 (실시간 데이터 표시로 변경)
+    // ==================================================================================
     private void OnMouseEnter()
     {
         // 죽은 유닛이나 UI가 없는 상태면 무시
         if (isDead || UnitInfoPanel.I == null || _linkedData == null) return;
 
-        // 마우스가 유닛 위에 올라오면 정보창 표시 (버튼과 동일한 방식)
-        UnitInfoPanel.I.ShowUnitInfo(_linkedData);
+        // 🌟 [변경] 기존 ShowUnitInfo 대신 실시간 정보를 보여주는 ShowDynamicUnitInfo 호출
+        UnitInfoPanel.I.ShowDynamicUnitInfo(this);
     }
 
     private void OnMouseExit()

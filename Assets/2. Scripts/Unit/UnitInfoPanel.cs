@@ -174,6 +174,43 @@ public class UnitInfoPanel : SingletonBehaviour<UnitInfoPanel>
         if (canvasGroup != null) canvasGroup.alpha = 0f;
     }
 
+    // 🌟 [신규] 유닛 실시간 정보 표시 (UnitController의 실제 스탯 사용)
+    public void ShowDynamicUnitInfo(UnitController unit)
+    {
+        if (unit == null || unit.LinkedData == null) return;
+
+        UnitData staticData = unit.LinkedData;
+
+        // 비용 정보는 변하지 않으므로 원본 데이터에서 가져옴
+        string ironStr = $"<color={colorIron}>철재: {staticData.ironCost}</color>";
+        string oilStr = staticData.oilCost > 0 ? $"   <color={colorOil}>기름: {staticData.oilCost}</color>" : "";
+        string costInfo = $"{ironStr}{oilStr}";
+
+        // 실시간 스탯 텍스트 생성 (StringBuilder 사용)
+        StringBuilder sb = new StringBuilder();
+
+        // 1. 체력 (현재 / 최대) - 보기 좋게 정수로 반올림
+        sb.Append(FormatStat("HP", Mathf.RoundToInt(unit.currentHP), $" / {Mathf.RoundToInt(unit.maxHP)}"));
+        sb.Append("   "); 
+        sb.Append(FormatStat("DEF", unit.defense)); // 방어력 (버프 반영됨)
+        sb.AppendLine();
+
+        // 2. 공격력 & 이동속도 (버프/디버프 반영됨)
+        sb.Append(FormatStat("ATK", unit.attackDamage));
+        sb.Append("   ");
+        sb.Append(FormatStat("SPD", unit.moveSpeed));
+        sb.AppendLine();
+
+        // 3. 사거리 & 공격속도 (업그레이드 반영됨)
+        sb.Append(FormatStat("RNG", unit.attackRange));
+        sb.Append("   ");
+        // 공격 쿨타임 (낮을수록 빠름)
+        sb.Append(FormatStat("CD", unit.attackCooldown, "s"));
+
+        // 공용 함수 호출하여 패널 갱신
+        ShowGenericInfo(staticData.unitName, staticData.icon, sb.ToString(), costInfo);
+    }
+
     IEnumerator FadeIn()
     {
         canvasGroup.blocksRaycasts = false; 
